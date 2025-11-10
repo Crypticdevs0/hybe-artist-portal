@@ -22,6 +22,17 @@ interface Message {
   created_at: string
 }
 
+const isMessage = (value: unknown): value is Message => {
+  if (!value || typeof value !== "object") return false
+  const v = value as Record<string, unknown>
+  return (
+    typeof v.id === "string" &&
+    typeof v.content === "string" &&
+    typeof v.sender_id === "string" &&
+    typeof v.created_at === "string"
+  )
+}
+
 interface MessageThreadProps {
   messages: Message[]
   currentUserId: string
@@ -66,9 +77,10 @@ export function MessageThread({
           table: "messages",
           filter: `sender_id=eq.${recipientId},recipient_id=eq.${currentUserId}`,
         },
-        (payload: RealtimePostgresChangesPayload<Message>) => {
-          if (payload.new) {
-            setMessages((prev) => [...prev, payload.new])
+        (payload) => {
+          const next = (payload as { new: unknown }).new
+          if (isMessage(next)) {
+            setMessages((prev) => [...prev, next])
           }
           setIsConnected(true)
         },
@@ -114,7 +126,9 @@ export function MessageThread({
 
       if (error) throw error
 
+      if (isMessage(data)) {
       setMessages((prev) => [...prev, data])
+      }
       setNewMessage("")
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto"
