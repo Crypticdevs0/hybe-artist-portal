@@ -48,5 +48,15 @@ export function createServiceRoleClient() {
     throw new Error('Supabase URL or SERVICE ROLE key is not configured (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY)')
   }
 
-  return createServerClient(url, serviceKey)
+  // Provide minimal cookie methods required by the server client types.
+  // Service role client runs in trusted server environments and does not
+  // rely on request cookies, so getAll returns an empty array and setAll is a no-op.
+  return createServerClient(url, serviceKey, {
+    cookies: {
+      getAll() {
+        return []
+      },
+      setAll() {},
+    },
+  })
 }
