@@ -186,6 +186,7 @@ export function FileUpload({
             variant="ghost"
             size="icon"
             onClick={handleClear}
+            aria-label="Clear preview"
             className="absolute top-2 right-2 bg-background/80 hover:bg-background"
           >
             <X className="h-4 w-4" />
@@ -205,6 +206,7 @@ export function FileUpload({
             variant="ghost"
             size="icon"
             onClick={handleClear}
+            aria-label="Clear file"
             className="flex-shrink-0"
           >
             <X className="h-4 w-4" />
