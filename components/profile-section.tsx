@@ -1,11 +1,14 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { FileUpload } from "@/components/file-upload"
-import { Mail, Calendar, Upload } from "lucide-react"
+const Mail = dynamic(() => import("lucide-react").then((m) => m.Mail), { ssr: false })
+const Calendar = dynamic(() => import("lucide-react").then((m) => m.Calendar), { ssr: false })
+const Upload = dynamic(() => import("lucide-react").then((m) => m.Upload), { ssr: false })
 import { format } from "date-fns"
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"

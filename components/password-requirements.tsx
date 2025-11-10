@@ -1,6 +1,8 @@
 "use client"
 
-import { Check, X } from "lucide-react"
+import dynamic from "next/dynamic"
+const Check = dynamic(() => import("lucide-react").then((m) => m.Check), { ssr: false })
+const X = dynamic(() => import("lucide-react").then((m) => m.X), { ssr: false })
 import { useEffect, useState } from "react"
 
 interface PasswordRequirement {

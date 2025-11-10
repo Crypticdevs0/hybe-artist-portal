@@ -1,8 +1,11 @@
 'use client'
 
 import * as React from 'react'
+import dynamic from 'next/dynamic'
 import * as SelectPrimitive from '@radix-ui/react-select'
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
+const CheckIcon = dynamic(() => import('lucide-react').then((m) => m.CheckIcon), { ssr: false })
+const ChevronDownIcon = dynamic(() => import('lucide-react').then((m) => m.ChevronDownIcon), { ssr: false })
+const ChevronUpIcon = dynamic(() => import('lucide-react').then((m) => m.ChevronUpIcon), { ssr: false })
 
 import { cn } from '@/lib/utils'
 

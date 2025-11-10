@@ -1,8 +1,9 @@
 'use client'
 
 import * as React from 'react'
+import dynamic from 'next/dynamic'
 import * as SheetPrimitive from '@radix-ui/react-dialog'
-import { XIcon } from 'lucide-react'
+const XIcon = dynamic(() => import('lucide-react').then((mod) => mod.XIcon), { ssr: false })
 
 import { cn } from '@/lib/utils'
 

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -16,7 +16,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { FileUpload } from "@/components/file-upload"
-import { Plus, Loader2 } from "lucide-react"
+const Plus = dynamic(() => import("lucide-react").then((m) => m.Plus), { ssr: false })
+const Loader2 = dynamic(() => import("lucide-react").then((m) => m.Loader2), { ssr: false })
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"

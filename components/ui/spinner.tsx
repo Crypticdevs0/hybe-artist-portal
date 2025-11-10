@@ -1,6 +1,10 @@
-import { Loader2Icon } from 'lucide-react'
+"use client"
+
+import dynamic from 'next/dynamic'
 
 import { cn } from '@/lib/utils'
+
+const Loader2Icon = dynamic(() => import('lucide-react').then((m) => m.Loader2Icon), { ssr: false })
 
 function Spinner({ className, ...props }: React.ComponentProps<'svg'>) {
   return (

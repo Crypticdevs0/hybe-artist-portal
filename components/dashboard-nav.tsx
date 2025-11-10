@@ -1,7 +1,14 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
-import { Bell, Home, MessageSquare, User, LogOut, Menu } from "lucide-react"
+// Dynamically import icons to keep them out of the initial client bundle
+const Bell = dynamic(() => import("lucide-react").then((mod) => mod.Bell), { ssr: false })
+const Home = dynamic(() => import("lucide-react").then((mod) => mod.Home), { ssr: false })
+const MessageSquare = dynamic(() => import("lucide-react").then((mod) => mod.MessageSquare), { ssr: false })
+const User = dynamic(() => import("lucide-react").then((mod) => mod.User), { ssr: false })
+const LogOut = dynamic(() => import("lucide-react").then((mod) => mod.LogOut), { ssr: false })
+const Menu = dynamic(() => import("lucide-react").then((mod) => mod.Menu), { ssr: false })
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"

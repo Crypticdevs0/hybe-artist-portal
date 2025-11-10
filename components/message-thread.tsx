@@ -1,15 +1,17 @@
 "use client"
 
 import type React from "react"
+import dynamic from "next/dynamic"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Send, AlertCircle } from "lucide-react"
+const Send = dynamic(() => import("lucide-react").then((m) => m.Send), { ssr: false })
+const AlertCircle = dynamic(() => import("lucide-react").then((m) => m.AlertCircle), { ssr: false })
 import { useState, useEffect, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
-import { Loader2 } from "lucide-react"
+const Loader2 = dynamic(() => import("lucide-react").then((m) => m.Loader2), { ssr: false })
 import { logError } from "@/lib/error-logger"
 
 interface Message {
