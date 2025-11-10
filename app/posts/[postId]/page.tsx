@@ -4,7 +4,7 @@ import { DashboardNav } from "@/components/dashboard-nav"
 import { PostCard } from "@/components/post-card"
 import { CommentSection } from "@/components/comment-section"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft } from "lucide-react"
+import Icon from "@/components/ui/icon"
 import Link from "next/link"
 
 export default async function PostPage({
@@ -80,7 +80,7 @@ export default async function PostPage({
           href="/dashboard"
           className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mb-6"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <Icon name="ArrowLeft" className="h-4 w-4" />
           Back to feed
         </Link>
 

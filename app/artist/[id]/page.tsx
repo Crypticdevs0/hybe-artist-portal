@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Mail } from "lucide-react"
+import Icon from "@/components/ui/icon"
 import Link from "next/link"
 
 export default async function ArtistPage({
@@ -87,7 +87,7 @@ export default async function ArtistPage({
           href="/search"
           className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mb-6"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <Icon name="ArrowLeft" className="h-4 w-4" />
           Back to search
         </Link>
 
@@ -120,7 +120,7 @@ export default async function ArtistPage({
 
                 <Button asChild className="gradient-hybe text-white hover:opacity-90 transition-opacity w-full sm:w-auto">
                   <Link href={`/messages/${id}`} className="flex items-center justify-center gap-2">
-                    <Mail className="h-4 w-4" />
+                    <Icon name="Mail" className="h-4 w-4" />
                     Send Message
                   </Link>
                 </Button>

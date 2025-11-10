@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { MessageCircle, Users, Star, Shield, Sparkles, Heart, Award } from "lucide-react"
+import Icon from "@/components/ui/icon"
 import Link from "next/link"
 
 export default function HomePage() {
@@ -12,7 +12,7 @@ export default function HomePage() {
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
           <div className="text-center">
             <div className="mb-6 sm:mb-8 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-primary">
-              <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
+              <Icon name="Sparkles" className="h-3 w-3 sm:h-4 sm:w-4" />
               <span>Premium Artist Connection Platform</span>
             </div>
 
@@ -62,7 +62,7 @@ export default function HomePage() {
           <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-primary/10">
             <CardContent className="flex flex-col items-center p-6 sm:p-8 text-center">
               <div className="mb-4 sm:mb-6 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 group-hover:from-primary/30 group-hover:to-primary/20 transition-all">
-                <MessageCircle className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
+                <Icon name="MessageCircle" className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
               </div>
               <h3 className="mb-2 sm:mb-3 text-lg sm:text-xl font-semibold">Direct Messaging</h3>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
@@ -74,7 +74,7 @@ export default function HomePage() {
           <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-primary/10">
             <CardContent className="flex flex-col items-center p-6 sm:p-8 text-center">
               <div className="mb-4 sm:mb-6 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-accent/20 to-accent/10 group-hover:from-accent/30 group-hover:to-accent/20 transition-all">
-                <Star className="h-7 w-7 sm:h-8 sm:w-8 text-accent-foreground" />
+                <Icon name="Star" className="h-7 w-7 sm:h-8 sm:w-8 text-accent-foreground" />
               </div>
               <h3 className="mb-2 sm:mb-3 text-lg sm:text-xl font-semibold">Exclusive Content</h3>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
@@ -86,7 +86,7 @@ export default function HomePage() {
           <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-primary/10">
             <CardContent className="flex flex-col items-center p-6 sm:p-8 text-center">
               <div className="mb-4 sm:mb-6 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-chart-2/20 to-chart-2/10 group-hover:from-chart-2/30 group-hover:to-chart-2/20 transition-all">
-                <Users className="h-7 w-7 sm:h-8 sm:w-8 text-chart-2" />
+                <Icon name="Users" className="h-7 w-7 sm:h-8 sm:w-8 text-chart-2" />
               </div>
               <h3 className="mb-2 sm:mb-3 text-lg sm:text-xl font-semibold">Community</h3>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
@@ -98,7 +98,7 @@ export default function HomePage() {
           <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-primary/10">
             <CardContent className="flex flex-col items-center p-6 sm:p-8 text-center">
               <div className="mb-4 sm:mb-6 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-chart-3/20 to-chart-3/10 group-hover:from-chart-3/30 group-hover:to-chart-3/20 transition-all">
-                <Shield className="h-7 w-7 sm:h-8 sm:w-8 text-chart-3" />
+                <Icon name="Shield" className="h-7 w-7 sm:h-8 sm:w-8 text-chart-3" />
               </div>
               <h3 className="mb-2 sm:mb-3 text-lg sm:text-xl font-semibold">Secure Platform</h3>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
@@ -114,21 +114,21 @@ export default function HomePage() {
           <div className="grid gap-8 sm:gap-6 md:grid-cols-3">
             <div className="text-center">
               <div className="mb-3 sm:mb-4 inline-flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-primary/10">
-                <Award className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
+                <Icon name="Award" className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
               </div>
               <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-2">50K+</div>
               <div className="text-sm sm:text-base text-muted-foreground">Premium Members</div>
             </div>
             <div className="text-center">
               <div className="mb-3 sm:mb-4 inline-flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-primary/10">
-                <Users className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
+                <Icon name="Users" className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
               </div>
               <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-2">200+</div>
               <div className="text-sm sm:text-base text-muted-foreground">Artists Connected</div>
             </div>
             <div className="text-center">
               <div className="mb-3 sm:mb-4 inline-flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-primary/10">
-                <Heart className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
+                <Icon name="Heart" className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
               </div>
               <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-2">1M+</div>
               <div className="text-sm sm:text-base text-muted-foreground">Messages Exchanged</div>

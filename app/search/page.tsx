@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { PostCard } from "@/components/post-card"
-import { Search, FileText, Users } from "lucide-react"
+import Icon from "@/components/ui/icon"
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
 
@@ -90,7 +90,7 @@ export default async function SearchPage({
 
       <div className="mx-auto max-w-4xl px-4 sm:px-6 py-6 sm:py-8 lg:py-10">
         <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
-          <Search className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+          <Icon name="Search" className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground truncate">
               {query ? `Search Results for "${query}"` : "Search"}
@@ -100,8 +100,8 @@ export default async function SearchPage({
 
         {!query && (
           <Card className="p-8 sm:p-12 text-center border-primary/10 bg-card/50 backdrop-blur-sm">
-            <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 sm:mb-6">
-              <Search className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
+              <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 sm:mb-6">
+              <Icon name="Search" className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
             </div>
             <p className="text-base sm:text-lg font-semibold mb-2 text-foreground">Start searching</p>
             <p className="text-sm text-muted-foreground">Enter at least 2 characters to search for posts and artists</p>
@@ -125,7 +125,7 @@ export default async function SearchPage({
             {posts.length === 0 && artists.length === 0 && (
               <Card className="p-8 sm:p-12 text-center border-primary/10 bg-card/50 backdrop-blur-sm">
                 <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 sm:mb-6">
-                  <Search className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
+                  <Icon name="Search" className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
                 </div>
                 <p className="text-base sm:text-lg font-semibold mb-2 text-foreground">No results found</p>
                 <p className="text-sm text-muted-foreground">Try searching with different keywords</p>
@@ -135,7 +135,7 @@ export default async function SearchPage({
             {artists.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-primary" />
+                  <Icon name="Users" className="h-5 w-5 text-primary" />
                   <h2 className="text-lg sm:text-xl font-bold">Artists ({artists.length})</h2>
                 </div>
                 <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
@@ -170,7 +170,7 @@ export default async function SearchPage({
             {posts.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-primary" />
+                  <Icon name="FileText" className="h-5 w-5 text-primary" />
                   <h2 className="text-lg sm:text-xl font-bold">Posts ({posts.length})</h2>
                 </div>
                 <div className="space-y-4 sm:space-y-6">
