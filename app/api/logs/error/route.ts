@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import * as Sentry from "@sentry/node"
 
 interface ErrorLog {
   context: string
@@ -6,6 +7,15 @@ interface ErrorLog {
   stack?: string
   timestamp: string
   metadata?: Record<string, unknown>
+}
+
+// Initialize Sentry server-side if DSN is configured
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || "development",
+    tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE) || 0.1,
+  })
 }
 
 export async function POST(request: Request) {
@@ -18,59 +28,30 @@ export async function POST(request: Request) {
       timestamp: new Date(body.timestamp).toISOString(),
     }
 
-    if (process.env.NODE_ENV === "production") {
+    if (process.env.SENTRY_DSN) {
+      // Use Sentry SDK for robust error reporting
+      Sentry.captureException(new Error(`[${logEntry.context}] ${logEntry.message}`), {
+        extra: {
+          metadata: logEntry.metadata,
+          userAgent: logEntry.userAgent,
+        },
+      })
+      // flush before returning in serverless environments (best-effort)
       try {
-        if (process.env.SENTRY_DSN) {
-          const response = await fetch("https://sentry.io/api/store/", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `DSN ${process.env.SENTRY_DSN}`,
-            },
-            body: JSON.stringify({
-              level: "error",
-              message: logEntry.message,
-              contexts: {
-                action: logEntry.metadata,
-              },
-              tags: {
-                context: logEntry.context,
-              },
-              exception: {
-                values: [
-                  {
-                    type: "Error",
-                    value: logEntry.message,
-                    stacktrace: logEntry.stack
-                      ? {
-                          frames: logEntry.stack
-                            .split("\n")
-                            .filter((line) => line.trim())
-                            .map((line) => ({
-                              context_line: line,
-                            })),
-                        }
-                      : undefined,
-                  },
-                ],
-              },
-            }),
-          })
-
-          if (!response.ok) {
-            console.error("Failed to send error to Sentry:", response.statusText)
-          }
-        }
-      } catch (error) {
-        console.error("Failed to log error:", error)
+        await Sentry.flush(2000)
+      } catch (e) {
+        // ignore flush errors
       }
     } else {
+      // In non-production, log to console for debugging
       console.log("Error Log Entry:", logEntry)
     }
 
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (error) {
     console.error("Error processing error log:", error)
+    // Report unexpected processing errors to Sentry if configured
+    if (process.env.SENTRY_DSN) Sentry.captureException(error)
     return NextResponse.json({ error: "Failed to process log" }, { status: 400 })
   }
 }

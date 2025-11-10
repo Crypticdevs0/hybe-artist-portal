@@ -1,5 +1,5 @@
-import { createServerClient } from "@supabase/ssr"
 import { NextRequest, NextResponse } from "next/server"
+import { createClient } from "@/lib/supabase/server"
 
 interface SearchResult {
   posts: Array<{
@@ -32,22 +32,32 @@ export async function GET(request: NextRequest): Promise<NextResponse<SearchResu
       return NextResponse.json({ posts: [], artists: [] })
     }
 
-    // Create server-side Supabase client
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    // Basic in-memory rate limit (per-instance). For production, use a shared store (Redis).
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown'
+    const RATE_LIMIT = 60 // requests per minute
+    const RATE_WINDOW_MS = 60_000 // 1 minute
 
-    if (!supabaseUrl || !supabaseKey) {
-      return NextResponse.json({ error: "Supabase not configured" }, { status: 500 })
+    // Attach a simple global map for per-IP counters. This is per-instance only.
+    // For robust rate-limiting across instances use Redis, Upstash or similar.
+    // @ts-ignore
+    if (!global.__searchRateLimit) global.__searchRateLimit = new Map<string, { count: number; reset: number }>()
+    // @ts-ignore
+    const map: Map<string, { count: number; reset: number }> = global.__searchRateLimit
+    const entry = map.get(ip) || { count: 0, reset: Date.now() + RATE_WINDOW_MS }
+    if (Date.now() > entry.reset) {
+      entry.count = 0
+      entry.reset = Date.now() + RATE_WINDOW_MS
+    }
+    entry.count += 1
+    map.set(ip, entry)
+    if (entry.count > RATE_LIMIT) {
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
     }
 
-    const supabase = createServerClient(supabaseUrl, supabaseKey, {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll() {},
-      },
-    })
+    // Create server-side Supabase client using server helper which reads
+    // server-only env vars (SUPABASE_URL and SUPABASE_ANON_KEY). This avoids
+    // exposing NEXT_PUBLIC_* values to the client bundle.
+    const supabase = await createClient()
 
     // Get current user
     const {
@@ -87,10 +97,10 @@ export async function GET(request: NextRequest): Promise<NextResponse<SearchResu
       .limit(10)
 
     return NextResponse.json({
-      posts: (posts || []).map((post) => ({
+      posts: (posts || []).map((post: any) => ({
         id: post.id,
         title: post.title,
-        content: post.content.substring(0, 150), // Preview
+        content: post.content?.substring(0, 150) || '', // Preview
         artist: post.artist,
         created_at: post.created_at,
       })),

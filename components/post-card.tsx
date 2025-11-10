@@ -1,5 +1,6 @@
 "use client"
 
+import Image from 'next/image'
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -102,12 +103,15 @@ export function PostCard({ post, onLike, onComment }: PostCardProps) {
           </p>
         </div>
         {post.media_url && (
-          <img
-            src={post.media_url || "/placeholder.svg"}
-            alt={post.title}
-            className="rounded-xl w-full object-cover max-h-80 sm:max-h-96 transition-all duration-300 hover:scale-[1.02]"
-            loading="lazy"
-          />
+          <div className="rounded-xl w-full overflow-hidden max-h-80 sm:max-h-96 relative">
+            <Image
+              src={post.media_url || "/placeholder.svg"}
+              alt={post.title}
+              fill
+              sizes="(max-width: 640px) 100vw, 800px"
+              className="object-cover transition-all duration-300 hover:scale-[1.02]"
+            />
+          </div>
         )}
       </CardContent>
       <CardFooter className="flex gap-2 sm:gap-4 border-t border-border/40 pt-3">
