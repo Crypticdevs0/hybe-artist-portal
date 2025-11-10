@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useState } from "react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { SearchBar } from "@/components/search-bar"
 
 interface DashboardNavProps {
   userRole?: string
@@ -35,15 +36,15 @@ export function DashboardNav({ userRole }: DashboardNavProps) {
   return (
     <nav className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-lg">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-14 sm:h-16 items-center justify-between">
-          <div className="flex items-center gap-4 sm:gap-8">
+        <div className="flex h-14 sm:h-16 items-center justify-between gap-4">
+          <div className="flex items-center gap-4 sm:gap-6 min-w-0">
             <Link
               href="/dashboard"
-              className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"
+              className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent flex-shrink-0"
             >
               HYBE
             </Link>
-            <div className="hidden md:flex md:gap-2">
+            <div className="hidden lg:flex lg:gap-2">
               {navItems.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href
@@ -63,6 +64,10 @@ export function DashboardNav({ userRole }: DashboardNavProps) {
                 )
               })}
             </div>
+          </div>
+
+          <div className="flex-1 hidden md:block max-w-sm lg:max-w-md">
+            <SearchBar />
           </div>
 
           <div className="hidden md:flex items-center gap-2">
@@ -96,24 +101,27 @@ export function DashboardNav({ userRole }: DashboardNavProps) {
             </SheetTrigger>
             <SheetContent side="right" className="w-64">
               <div className="flex flex-col gap-4 mt-8">
-                {navItems.map((item) => {
-                  const Icon = item.icon
-                  const isActive = pathname === item.href
-                  return (
-                    <Button
-                      key={item.href}
-                      asChild
-                      variant={isActive ? "default" : "ghost"}
-                      className={`justify-start ${isActive ? "gradient-hybe text-white" : ""}`}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <Link href={item.href} className="flex items-center gap-3">
-                        <Icon className="h-5 w-5" />
-                        {item.label}
-                      </Link>
-                    </Button>
-                  )
-                })}
+                <div className="pb-4 border-b">
+                  <SearchBar />
+                </div>
+              {navItems.map((item) => {
+                const Icon = item.icon
+                const isActive = pathname === item.href
+                return (
+                  <Button
+                    key={item.href}
+                    asChild
+                    variant={isActive ? "default" : "ghost"}
+                    className={`justify-start ${isActive ? "gradient-hybe text-white" : ""}`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Link href={item.href} className="flex items-center gap-3">
+                      <Icon className="h-5 w-5" />
+                      {item.label}
+                    </Link>
+                  </Button>
+                )
+              })}
 
                 <div className="border-t pt-4 mt-4 space-y-2">
                   {userRole === "admin" && (
