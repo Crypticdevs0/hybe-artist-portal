@@ -7,6 +7,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 
 interface UploadResponse {
   url?: string
+  thumbnail_url?: string
   error?: string
 }
 
@@ -135,12 +136,4 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
       { status: 500 }
     )
   }
-}
-
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "10mb",
-    },
-  },
 }
