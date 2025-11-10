@@ -40,6 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans antialiased`}>
+        <LoadingSpinner />
         {children}
         <Toaster />
         <Analytics />
