@@ -9,6 +9,7 @@ import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
+import { logError } from "@/lib/error-logger"
 
 interface Comment {
   id: string
@@ -76,7 +77,7 @@ export function CommentSection({
       })
       onCommentAdded?.()
     } catch (error) {
-      console.error("Error adding comment:", error)
+      logError("add_comment", error, { post_id: postId, user_id: currentUserId })
       toast({
         variant: "destructive",
         title: "Error",

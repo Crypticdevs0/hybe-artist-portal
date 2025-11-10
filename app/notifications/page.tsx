@@ -84,7 +84,9 @@ export default async function NotificationsPage() {
                   className={`border-primary/10 bg-card/80 backdrop-blur-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 animate-in fade-in-0 slide-in-from-top-2 ${
                     notification.is_read ? "" : "ring-2 ring-primary/20"
                   }`}
-                  style={{ animationDelay: `${index * 30}ms` }}
+                  style={{
+                    animationDelay: `${index * 30}ms`,
+                  }}
                 >
                   <CardContent className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4">
                     <div

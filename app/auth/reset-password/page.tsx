@@ -7,33 +7,44 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { PasswordRequirements } from "@/components/password-requirements"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Sparkles } from "lucide-react"
 
-export default function LoginPage() {
-  const [email, setEmail] = useState("")
+export default function ResetPasswordPage() {
+  const router = useRouter()
   const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [isPasswordValid, setIsPasswordValid] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const supabase = createClient()
     setIsLoading(true)
     setError(null)
 
+    if (password !== confirmPassword) {
+      setError("Passwords do not match")
+      setIsLoading(false)
+      return
+    }
+
+    if (!isPasswordValid) {
+      setError("Please meet all password requirements")
+      setIsLoading(false)
+      return
+    }
+
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-      if (error) throw error
-      router.push("/dashboard")
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred")
+      const { error: updateError } = await supabase.auth.updateUser({ password })
+      if (updateError) throw updateError
+      router.push("/auth/login?reset=success")
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Failed to reset password")
     } finally {
       setIsLoading(false)
     }
@@ -51,42 +62,21 @@ export default function LoginPage() {
           </div>
           <p className="text-sm sm:text-base text-muted-foreground">Artist Communication Portal</p>
         </div>
+
         <Card className="border-primary/10 shadow-xl">
           <CardHeader className="space-y-2 sm:space-y-3 pb-6">
-            <CardTitle className="text-2xl sm:text-3xl">Welcome Back</CardTitle>
+            <CardTitle className="text-2xl sm:text-3xl">Set New Password</CardTitle>
             <CardDescription className="text-sm sm:text-base">
-              Sign in to connect with your favorite artists
+              Enter your new password to regain access to your account
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleLogin}>
-              <div className="flex flex-col gap-4 sm:gap-6">
+            <form onSubmit={handleSubmit}>
+              <div className="flex flex-col gap-4 sm:gap-5">
                 <div className="grid gap-2">
-                  <Label htmlFor="email" className="text-sm sm:text-base">
-                    Email
+                  <Label htmlFor="password" className="text-sm sm:text-base">
+                    New Password
                   </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="member@example.com"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="h-10 sm:h-11"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password" className="text-sm sm:text-base">
-                      Password
-                    </Label>
-                    <Link
-                      href="/auth/forgot-password"
-                      className="text-xs sm:text-sm font-medium text-primary underline underline-offset-4 hover:text-primary/80 transition-colors"
-                    >
-                      Forgot?
-                    </Link>
-                  </div>
                   <Input
                     id="password"
                     type="password"
@@ -95,23 +85,45 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="h-10 sm:h-11"
                   />
+                  {password && <PasswordRequirements password={password} onValidityChange={setIsPasswordValid} />}
                 </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="confirm-password" className="text-sm sm:text-base">
+                    Confirm Password
+                  </Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="h-10 sm:h-11"
+                  />
+                </div>
+
                 {error && (
                   <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
                     {error}
                   </div>
                 )}
-                <Button type="submit" className="w-full gradient-hybe text-white h-10 sm:h-11" disabled={isLoading}>
-                  {isLoading ? "Signing in..." : "Sign In"}
+
+                <Button
+                  type="submit"
+                  className="w-full gradient-hybe text-white h-10 sm:h-11"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Resetting..." : "Reset Password"}
                 </Button>
               </div>
+
               <div className="mt-4 sm:mt-6 text-center text-sm">
-                Don&apos;t have an account?{" "}
+                Remember your password?{" "}
                 <Link
-                  href="/auth/sign-up"
+                  href="/auth/login"
                   className="font-medium text-primary underline underline-offset-4 hover:text-primary/80 transition-colors"
                 >
-                  Sign up
+                  Sign in
                 </Link>
               </div>
             </form>
