@@ -5,11 +5,11 @@ import type React from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Send } from "lucide-react"
+import { Send, AlertCircle } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
-import { Pointer as Spinner } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 interface Message {
   id: string
@@ -37,7 +37,9 @@ export function MessageThread({
   const [newMessage, setNewMessage] = useState("")
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isConnected, setIsConnected] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const supabase = createClient()
 
   const scrollToBottom = () => {
@@ -51,7 +53,7 @@ export function MessageThread({
   useEffect(() => {
     // Subscribe to new messages
     const channel = supabase
-      .channel("messages")
+      .channel(`messages-${currentUserId}-${recipientId}`)
       .on(
         "postgres_changes",
         {
@@ -62,18 +64,33 @@ export function MessageThread({
         },
         (payload) => {
           setMessages((prev) => [...prev, payload.new as Message])
+          setIsConnected(true)
         },
       )
-      .subscribe()
+      .on("system", { event: "database_changes.confirm" }, () => {
+        setIsConnected(true)
+      })
+      .subscribe((status) => {
+        setIsConnected(status === "SUBSCRIBED")
+      })
 
     return () => {
       supabase.removeChannel(channel)
     }
   }, [currentUserId, recipientId, supabase])
 
+  // Auto-resize textarea
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNewMessage(e.target.value)
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto"
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + "px"
+    }
+  }
+
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newMessage.trim() || isSending) return
+    if (!newMessage.trim() || isSending || !isConnected) return
 
     setIsSending(true)
     setError(null)
@@ -93,8 +110,11 @@ export function MessageThread({
 
       setMessages((prev) => [...prev, data])
       setNewMessage("")
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto"
+      }
     } catch (err) {
-      console.error("[v0] Error sending message:", err)
+      console.error("Error sending message:", err)
       setError("Failed to send message. Please check your connection and try again.")
     } finally {
       setIsSending(false)
@@ -102,14 +122,17 @@ export function MessageThread({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-16rem)] md:h-[calc(100vh-12rem)]">
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
+    <div className="flex flex-col h-full rounded-lg border border-primary/10 bg-card/50 backdrop-blur-sm overflow-hidden">
+      {/* Messages Container */}
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center text-muted-foreground">
-              <p className="text-sm">No messages yet</p>
-              <p className="text-xs mt-1">Start the conversation!</p>
+              <div className="inline-block p-3 sm:p-4 rounded-full bg-primary/10 mb-3">
+                <Send className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+              </div>
+              <p className="text-sm font-medium">No messages yet</p>
+              <p className="text-xs mt-1">Start the conversation with {recipientName}!</p>
             </div>
           </div>
         ) : (
@@ -117,23 +140,27 @@ export function MessageThread({
             const isOwn = message.sender_id === currentUserId
 
             return (
-              <div key={message.id} className={`flex items-start gap-2 ${isOwn ? "flex-row-reverse" : ""}`}>
+              <div key={message.id} className={`flex items-end gap-2 sm:gap-3 ${isOwn ? "flex-row-reverse" : ""}`}>
                 {!isOwn && (
-                  <Avatar className="h-6 w-6 md:h-8 md:w-8 flex-shrink-0">
-                    <AvatarImage src={recipientAvatar || undefined} />
-                    <AvatarFallback>{recipientName.substring(0, 2).toUpperCase()}</AvatarFallback>
+                  <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 ring-1 ring-primary/10">
+                    <AvatarImage src={recipientAvatar || undefined} alt={recipientName} />
+                    <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary text-xs font-semibold">
+                      {recipientName.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                 )}
 
-                <div className={`flex flex-col ${isOwn ? "items-end" : "items-start"} max-w-[75%] md:max-w-[70%]`}>
+                <div className={`flex flex-col gap-1 ${isOwn ? "items-end" : "items-start"} max-w-[85%] sm:max-w-[75%]`}>
                   <div
-                    className={`rounded-2xl px-3 py-2 md:px-4 md:py-2 ${
-                      isOwn ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
+                    className={`rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 break-words ${
+                      isOwn
+                        ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+                        : "bg-muted text-foreground border border-primary/5"
                     }`}
                   >
-                    <p className="text-xs md:text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                    <p className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
                   </div>
-                  <span className="text-[10px] md:text-xs text-muted-foreground mt-1">
+                  <span className="text-[10px] sm:text-xs text-muted-foreground px-1">
                     {formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}
                   </span>
                 </div>
@@ -144,34 +171,53 @@ export function MessageThread({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <form onSubmit={handleSend} className="border-t p-3 md:p-4">
-        {error && <div className="mb-2 p-2 bg-destructive/10 text-destructive text-xs rounded-lg">{error}</div>}
+      {/* Input Area */}
+      <form onSubmit={handleSend} className="border-t border-primary/10 p-3 sm:p-4 bg-card/80 backdrop-blur-sm">
+        {error && (
+          <div className="mb-3 p-2 sm:p-3 bg-destructive/10 text-destructive rounded-lg flex items-start gap-2 text-xs sm:text-sm">
+            <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {!isConnected && (
+          <div className="mb-3 p-2 sm:p-3 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 rounded-lg flex items-start gap-2 text-xs sm:text-sm">
+            <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+            <span>Reconnecting to chat...</span>
+          </div>
+        )}
 
         <div className="flex gap-2">
           <Textarea
+            ref={textareaRef}
             placeholder={`Message ${recipientName}...`}
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={handleMessageChange}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault()
                 handleSend(e)
               }
             }}
-            className="min-h-[60px] resize-none text-sm"
-            disabled={isSending}
+            className="resize-none text-sm min-h-[44px] max-h-[120px] py-2 sm:py-3 px-3 sm:px-4"
+            disabled={isSending || !isConnected}
+            rows={1}
           />
           <Button
             type="submit"
-            disabled={!newMessage.trim() || isSending}
-            className="bg-primary hover:bg-primary/90 shrink-0"
+            disabled={!newMessage.trim() || isSending || !isConnected}
+            className="gradient-hybe text-white hover:opacity-90 shrink-0"
             size="icon"
+            title={isSending ? "Sending..." : "Send message (Enter)"}
           >
-            {isSending ? <Spinner className="h-4 w-4" /> : <Send className="h-4 w-4" />}
+            {isSending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
           </Button>
         </div>
-        <p className="text-[10px] md:text-xs text-muted-foreground mt-2">
+        <p className="text-[10px] sm:text-xs text-muted-foreground mt-2 px-1">
           Press Enter to send, Shift+Enter for new line
         </p>
       </form>
