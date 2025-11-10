@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useState } from "react"
-import { Sparkles, ArrowLeft } from "lucide-react"
+import Icon from "@/components/ui/icon"
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
@@ -47,17 +47,17 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/10 p-4 sm:p-6">
       <div className="w-full max-w-md">
-        <Link
-          href="/auth/login"
-          className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mb-6 sm:mb-8"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to login
-        </Link>
+          <Link
+            href="/auth/login"
+            className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mb-6 sm:mb-8"
+          >
+            <Icon name="ArrowLeft" className="h-4 w-4" />
+            Back to login
+          </Link>
 
         <div className="mb-6 sm:mb-8 text-center">
           <div className="inline-flex items-center gap-2 mb-4 sm:mb-6">
-            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <Icon name="Sparkles" className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               HYBE
             </h1>

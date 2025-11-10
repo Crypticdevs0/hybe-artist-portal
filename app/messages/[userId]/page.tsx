@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft } from "lucide-react"
+import Icon from "@/components/ui/icon"
 import Link from "next/link"
 
 interface MessagePageProps {
@@ -62,9 +62,9 @@ export default async function MessagePage({ params }: MessagePageProps) {
 
       <div className="flex-1 mx-auto w-full max-w-5xl px-4 sm:px-6 py-4 sm:py-6 flex flex-col gap-4 sm:gap-6">
         {/* Header with Back Button */}
-        <Link href="/messages" className="inline-block w-fit">
+          <Link href="/messages" className="inline-block w-fit">
           <Button variant="ghost" size="sm" className="hover:bg-primary/10">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <Icon name="ArrowLeft" className="h-4 w-4 mr-2" />
             Back to Messages
           </Button>
         </Link>

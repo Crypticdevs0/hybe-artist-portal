@@ -11,7 +11,7 @@ import { PasswordRequirements } from "@/components/password-requirements"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { Sparkles } from "lucide-react"
+import Icon from "@/components/ui/icon"
 
 export default function ResetPasswordPage() {
   const router = useRouter()
@@ -55,7 +55,7 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md">
         <div className="mb-6 sm:mb-8 text-center">
           <div className="inline-flex items-center gap-2 mb-4 sm:mb-6">
-            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <Icon name="Sparkles" className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               HYBE
             </h1>

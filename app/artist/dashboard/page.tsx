@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { DashboardNav } from "@/components/dashboard-nav"
 import { CreatePostDialog } from "@/components/create-post-dialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MessageSquare, Heart, TrendingUp } from "lucide-react"
+import Icon from "@/components/ui/icon"
 
 export default async function ArtistDashboardPage() {
   const supabase = await createClient()
@@ -61,7 +61,7 @@ export default async function ArtistDashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6">
               <CardTitle className="text-xs md:text-sm font-medium">Posts</CardTitle>
-              <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
+              <Icon name="TrendingUp" className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="p-4 pt-0 md:p-6 md:pt-0">
               <div className="text-xl md:text-2xl font-bold">{posts?.length || 0}</div>
@@ -71,7 +71,7 @@ export default async function ArtistDashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6">
               <CardTitle className="text-xs md:text-sm font-medium">Likes</CardTitle>
-              <Heart className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
+              <Icon name="Heart" className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="p-4 pt-0 md:p-6 md:pt-0">
               <div className="text-xl md:text-2xl font-bold">{totalLikes}</div>
@@ -81,7 +81,7 @@ export default async function ArtistDashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6">
               <CardTitle className="text-xs md:text-sm font-medium">Comments</CardTitle>
-              <MessageSquare className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
+              <Icon name="MessageSquare" className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="p-4 pt-0 md:p-6 md:pt-0">
               <div className="text-xl md:text-2xl font-bold">{totalComments}</div>
@@ -108,11 +108,11 @@ export default async function ArtistDashboardPage() {
                       <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{post.content}</p>
                       <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
-                          <Heart className="h-3 w-3" />
+                          <Icon name="Heart" className="h-3 w-3" />
                           {post.likes.length}
                         </span>
                         <span className="flex items-center gap-1">
-                          <MessageSquare className="h-3 w-3" />
+                          <Icon name="MessageSquare" className="h-3 w-3" />
                           {post.comments.length}
                         </span>
                         <span>{new Date(post.created_at).toLocaleDateString()}</span>

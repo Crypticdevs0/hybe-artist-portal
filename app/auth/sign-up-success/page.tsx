@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Mail } from "lucide-react"
+import Icon from "@/components/ui/icon"
 
 export default function SignUpSuccessPage() {
   return (
@@ -11,9 +11,9 @@ export default function SignUpSuccessPage() {
         </div>
         <Card>
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100">
-              <Mail className="h-8 w-8 text-purple-600" />
-            </div>
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100">
+              <Icon name="Mail" className="h-8 w-8 text-purple-600" />
+              </div>
             <CardTitle className="text-2xl">Check Your Email</CardTitle>
             <CardDescription>We&apos;ve sent you a confirmation link</CardDescription>
           </CardHeader>
