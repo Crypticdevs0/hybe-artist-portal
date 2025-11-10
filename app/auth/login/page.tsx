@@ -76,9 +76,17 @@ export default function LoginPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="password" className="text-sm sm:text-base">
-                    Password
-                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-sm sm:text-base">
+                      Password
+                    </Label>
+                    <Link
+                      href="/auth/forgot-password"
+                      className="text-xs sm:text-sm font-medium text-primary underline underline-offset-4 hover:text-primary/80 transition-colors"
+                    >
+                      Forgot?
+                    </Link>
+                  </div>
                   <Input
                     id="password"
                     type="password"
