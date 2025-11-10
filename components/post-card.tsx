@@ -8,6 +8,7 @@ import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
+import { logError } from "@/lib/error-logger"
 
 interface PostCardProps {
   post: {
@@ -64,7 +65,7 @@ export function PostCard({ post, onLike, onComment }: PostCardProps) {
       }
       onLike?.()
     } catch (error) {
-      console.error("Error toggling like:", error)
+      logError("toggle_like", error, { post_id: post.id, user_id: user?.id })
       toast({
         variant: "destructive",
         title: "Error",
