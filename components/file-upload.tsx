@@ -1,6 +1,10 @@
 "use client"
 
-import { UploadCloud, X, AlertCircle, CheckCircle } from "lucide-react"
+import dynamic from "next/dynamic"
+const UploadCloud = dynamic(() => import("lucide-react").then((m) => m.UploadCloud), { ssr: false })
+const X = dynamic(() => import("lucide-react").then((m) => m.X), { ssr: false })
+const AlertCircle = dynamic(() => import("lucide-react").then((m) => m.AlertCircle), { ssr: false })
+const CheckCircle = dynamic(() => import("lucide-react").then((m) => m.CheckCircle), { ssr: false })
 import { useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 

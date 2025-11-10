@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { searchLimiter, limitWithUpstash } from '@/lib/upstash-rate-limit'
 
 interface SearchResult {
   posts: Array<{
@@ -32,25 +33,10 @@ export async function GET(request: NextRequest): Promise<NextResponse<SearchResu
       return NextResponse.json({ posts: [], artists: [] })
     }
 
-    // Basic in-memory rate limit (per-instance). For production, use a shared store (Redis).
+    // Use Upstash-backed rate limiter (fallback to in-memory if env not set)
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown'
-    const RATE_LIMIT = 60 // requests per minute
-    const RATE_WINDOW_MS = 60_000 // 1 minute
-
-    // Attach a simple global map for per-IP counters. This is per-instance only.
-    // For robust rate-limiting across instances use Redis, Upstash or similar.
-    // @ts-ignore
-    if (!global.__searchRateLimit) global.__searchRateLimit = new Map<string, { count: number; reset: number }>()
-    // @ts-ignore
-    const map: Map<string, { count: number; reset: number }> = global.__searchRateLimit
-    const entry = map.get(ip) || { count: 0, reset: Date.now() + RATE_WINDOW_MS }
-    if (Date.now() > entry.reset) {
-      entry.count = 0
-      entry.reset = Date.now() + RATE_WINDOW_MS
-    }
-    entry.count += 1
-    map.set(ip, entry)
-    if (entry.count > RATE_LIMIT) {
+    const rlRes = await limitWithUpstash(searchLimiter, ip, 60, 60)
+    if (!rlRes.success) {
       return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
     }
 

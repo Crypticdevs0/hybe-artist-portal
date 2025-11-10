@@ -1,6 +1,7 @@
 import { put } from "@vercel/blob"
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { uploadLimiter, limitWithUpstash } from "@/lib/upstash-rate-limit"
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 
@@ -15,20 +16,10 @@ if (!global.__uploadRateLimit) global.__uploadRateLimit = new Map<string, { coun
 
 export async function POST(request: NextRequest): Promise<NextResponse<UploadResponse>> {
   try {
-    // Rate-limit by IP
+    // Rate-limit by IP using Upstash (with in-memory fallback)
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown'
-    const UPLOAD_LIMIT = 10
-    const WINDOW_MS = 60_000
-    // @ts-ignore
-    const map: Map<string, { count: number; reset: number }> = global.__uploadRateLimit
-    const entry = map.get(ip) || { count: 0, reset: Date.now() + WINDOW_MS }
-    if (Date.now() > entry.reset) {
-      entry.count = 0
-      entry.reset = Date.now() + WINDOW_MS
-    }
-    entry.count += 1
-    map.set(ip, entry)
-    if (entry.count > UPLOAD_LIMIT) {
+    const res = await limitWithUpstash(uploadLimiter, ip, 10, 60)
+    if (!res.success) {
       return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
     }
 

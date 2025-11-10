@@ -1,6 +1,8 @@
 "use client"
 
-import { Search, X } from "lucide-react"
+import dynamic from "next/dynamic"
+const Search = dynamic(() => import("lucide-react").then((m) => m.Search), { ssr: false })
+const X = dynamic(() => import("lucide-react").then((m) => m.X), { ssr: false })
 import { useRouter } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
 import { Input } from "@/components/ui/input"

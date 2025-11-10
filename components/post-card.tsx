@@ -4,7 +4,10 @@ import Image from 'next/image'
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Heart, MessageCircle, Share2 } from "lucide-react"
+import dynamic from "next/dynamic"
+const Heart = dynamic(() => import("lucide-react").then((m) => m.Heart), { ssr: false })
+const MessageCircle = dynamic(() => import("lucide-react").then((m) => m.MessageCircle), { ssr: false })
+const Share2 = dynamic(() => import("lucide-react").then((m) => m.Share2), { ssr: false })
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
