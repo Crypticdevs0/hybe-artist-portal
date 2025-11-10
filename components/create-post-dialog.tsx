@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { FileUpload } from "@/components/file-upload"
 import { Plus, Loader2 } from "lucide-react"
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
@@ -31,6 +32,7 @@ export function CreatePostDialog({ artistId }: CreatePostDialogProps) {
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [visibility, setVisibility] = useState("all")
+  const [mediaUrl, setMediaUrl] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
@@ -53,6 +55,7 @@ export function CreatePostDialog({ artistId }: CreatePostDialogProps) {
         title: title.trim(),
         content: content.trim(),
         visibility,
+        media_url: mediaUrl,
       })
 
       if (error) throw error
@@ -65,10 +68,11 @@ export function CreatePostDialog({ artistId }: CreatePostDialogProps) {
       setOpen(false)
       setTitle("")
       setContent("")
+      setMediaUrl(null)
       setVisibility("all")
       router.refresh()
     } catch (error) {
-      logError("create_post", error, { artist_id: artistId, visibility })
+      logError("create_post", error, { artist_id: artistId, visibility, has_media: !!mediaUrl })
       toast({
         variant: "destructive",
         title: "Failed to publish",
@@ -102,6 +106,7 @@ export function CreatePostDialog({ artistId }: CreatePostDialogProps) {
               onChange={(e) => setTitle(e.target.value)}
               required
               className={title.length > 0 && !isTitleValid ? "border-destructive" : ""}
+              disabled={isSubmitting}
             />
             {title.length > 0 && (
               <p className={`text-xs ${isTitleValid ? "text-muted-foreground" : "text-destructive"}`}>
@@ -119,6 +124,7 @@ export function CreatePostDialog({ artistId }: CreatePostDialogProps) {
               onChange={(e) => setContent(e.target.value)}
               className={`min-h-[200px] resize-none ${content.length > 0 && !isContentValid ? "border-destructive" : ""}`}
               required
+              disabled={isSubmitting}
             />
             {content.length > 0 && (
               <p className={`text-xs ${isContentValid ? "text-muted-foreground" : "text-destructive"}`}>
@@ -128,8 +134,17 @@ export function CreatePostDialog({ artistId }: CreatePostDialogProps) {
           </div>
 
           <div className="space-y-2">
+            <Label>Media (Optional)</Label>
+            <FileUpload
+              onUpload={(url) => setMediaUrl(url)}
+              label="Add image, video, or document"
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="visibility">Visibility</Label>
-            <Select value={visibility} onValueChange={setVisibility}>
+            <Select value={visibility} onValueChange={setVisibility} disabled={isSubmitting}>
               <SelectTrigger id="visibility">
                 <SelectValue />
               </SelectTrigger>
