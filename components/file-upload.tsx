@@ -5,7 +5,7 @@ import { useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 
 interface FileUploadProps {
-  onUpload: (url: string, fileName: string) => void
+  onUpload: (url: string, fileName: string, thumbnailUrl?: string) => void
   maxSize?: number
   accept?: string
   label?: string
@@ -53,8 +53,10 @@ export function FileUpload({
         throw new Error(data.error || "Upload failed")
       }
 
-      // Create preview for images/videos
-      if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
+      // Create preview for images/videos. Prefer server-generated thumbnail if present
+      if (data.thumbnail_url) {
+        setPreview(data.thumbnail_url)
+      } else if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
         const reader = new FileReader()
         reader.onload = (e) => {
           setPreview(e.target?.result as string)
@@ -62,7 +64,7 @@ export function FileUpload({
         reader.readAsDataURL(file)
       }
 
-      onUpload(data.url, file.name)
+      onUpload(data.url, file.name, data.thumbnail_url)
       setFileName(file.name)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed")

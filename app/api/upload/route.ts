@@ -96,8 +96,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
     const fileExtension = rawExt.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() || 'bin'
     const filename = `${timestamp}-${random}.${fileExtension}`
 
-    // Optionally sanitize images (strip metadata) if `sharp` is available
+    // Optionally sanitize images (strip metadata) and generate a thumbnail if `sharp` is available
     let uploadTarget: any = file
+    let thumbnailUrl: string | undefined = undefined
     if (file.type.startsWith('image/')) {
       try {
         const sharp = await import('sharp')
@@ -106,19 +107,36 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
         // Sharp by default removes metadata unless withMetadata() is used
         const processed = await sharp.default(buffer).toBuffer()
         uploadTarget = processed
+
+        // Create a thumbnail (webp) for faster delivery in feeds
+        try {
+          const thumbBuffer = await sharp.default(processed)
+            .resize({ width: 800, withoutEnlargement: true })
+            .webp({ quality: 80 })
+            .toBuffer()
+
+          const thumbFilename = `${timestamp}-${random}-thumb.webp`
+          const thumbBlob = await put(thumbFilename, thumbBuffer, {
+            access: 'public',
+            addRandomSuffix: false,
+          })
+          thumbnailUrl = thumbBlob.url
+        } catch (thumbErr) {
+          console.warn('Thumbnail generation failed:', (thumbErr as Error)?.message || thumbErr)
+        }
       } catch (err) {
         // If sharp isn't installed or processing fails, continue with original file
         console.warn('Image sanitization skipped:', (err as Error)?.message || err)
       }
     }
 
-    // Upload to Vercel Blob
+    // Upload original (or processed) to Vercel Blob
     const blob = await put(filename, uploadTarget, {
       access: "public",
       addRandomSuffix: false,
     })
 
-    return NextResponse.json({ url: blob.url })
+    return NextResponse.json({ url: blob.url, thumbnail_url: thumbnailUrl })
   } catch (error) {
     console.error("Upload error:", error)
     return NextResponse.json(

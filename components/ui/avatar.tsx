@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import * as AvatarPrimitive from '@radix-ui/react-avatar'
+import Image from 'next/image'
 
 import { cn } from '@/lib/utils'
 
@@ -23,14 +24,21 @@ function Avatar({
 
 function AvatarImage({
   className,
+  src,
+  alt,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+}: React.ComponentProps<typeof AvatarPrimitive.Image> & { src?: string; alt?: string }) {
+  // Use Radix Avatar Image with asChild to render next/image for optimization
   return (
-    <AvatarPrimitive.Image
-      data-slot="avatar-image"
-      className={cn('aspect-square size-full', className)}
-      {...props}
-    />
+    <AvatarPrimitive.Image data-slot="avatar-image" asChild {...props}>
+      <Image
+        src={src || '/placeholder.svg'}
+        alt={alt || ''}
+        width={48}
+        height={48}
+        className={cn('rounded-full object-cover', className)}
+      />
+    </AvatarPrimitive.Image>
   )
 }
 
