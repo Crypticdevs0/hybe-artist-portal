@@ -20,6 +20,7 @@ import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
+import { logError } from "@/lib/error-logger"
 
 interface CreatePostDialogProps {
   artistId: string
@@ -67,7 +68,7 @@ export function CreatePostDialog({ artistId }: CreatePostDialogProps) {
       setVisibility("all")
       router.refresh()
     } catch (error) {
-      console.error("Error creating post:", error)
+      logError("create_post", error, { artist_id: artistId, visibility })
       toast({
         variant: "destructive",
         title: "Failed to publish",
