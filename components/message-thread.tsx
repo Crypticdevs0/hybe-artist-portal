@@ -10,6 +10,7 @@ import { useState, useEffect, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 import { Loader2 } from "lucide-react"
+import { logError } from "@/lib/error-logger"
 
 interface Message {
   id: string
@@ -114,7 +115,7 @@ export function MessageThread({
         textareaRef.current.style.height = "auto"
       }
     } catch (err) {
-      console.error("Error sending message:", err)
+      logError("send_message", err, { recipient_id: recipientId })
       setError("Failed to send message. Please check your connection and try again.")
     } finally {
       setIsSending(false)
