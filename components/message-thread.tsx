@@ -10,7 +10,6 @@ const Send = dynamic(() => import("lucide-react").then((m) => m.Send), { ssr: fa
 const AlertCircle = dynamic(() => import("lucide-react").then((m) => m.AlertCircle), { ssr: false })
 import { useState, useEffect, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
-import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js"
 import { formatDistanceToNow } from "date-fns"
 const Loader2 = dynamic(() => import("lucide-react").then((m) => m.Loader2), { ssr: false })
 import { logError } from "@/lib/error-logger"
