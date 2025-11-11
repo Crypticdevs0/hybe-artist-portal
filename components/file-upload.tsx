@@ -9,7 +9,7 @@ import React, { useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 
 interface FileUploadProps {
-  onUpload: (url: string, fileName: string, thumbnailUrl?: string) => void
+  onUpload: (_url: string, _fileName: string, _thumbnailUrl?: string) => void
   maxSize?: number
   accept?: string
   label?: string
