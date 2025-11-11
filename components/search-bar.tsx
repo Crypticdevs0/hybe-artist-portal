@@ -139,7 +139,7 @@ export function SearchBar() {
 
           {!isLoading && results && (results.posts.length === 0 && results.artists.length === 0) && (
             <div className="p-4 text-center text-sm text-muted-foreground">
-              No results found for "{query}"
+              No results found for &ldquo;{query}&rdquo;
             </div>
           )}
 
