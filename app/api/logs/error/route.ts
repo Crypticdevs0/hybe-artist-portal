@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-import { NextResponse } from "next/server"
 import { initSentry, Sentry } from "@/lib/sentry/init"
 
 interface ErrorLog {
@@ -44,9 +43,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (error) {
-    console.error("Error processing error log:", error)
-    // Report unexpected processing errors to Sentry if configured
-    if (process.env.SENTRY_DSN) Sentry.captureException(error)
+    // Report unexpected processing errors to Sentry if configured, otherwise warn
+    if (process.env.SENTRY_DSN) {
+      Sentry.captureException(error)
+    } else {
+      console.warn("Error processing error log:", error)
+    }
     return NextResponse.json({ error: "Failed to process log" }, { status: 400 })
   }
 }

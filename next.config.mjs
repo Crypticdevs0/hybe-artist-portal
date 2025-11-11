@@ -32,6 +32,7 @@ const securityHeaders = [
 ]
 
 const nextConfig = {
+  reactStrictMode: true,
   typescript: {
     ignoreBuildErrors: false,
   },
