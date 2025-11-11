@@ -1,13 +1,12 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { DashboardNav } from "@/components/dashboard-nav"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { PostCard } from "@/components/post-card"
 import Icon from "@/components/ui/icon"
 import Link from "next/link"
-import { formatDistanceToNow } from "date-fns"
 
 interface SearchParams {
   q?: string
