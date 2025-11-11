@@ -10,9 +10,9 @@ import Link from "next/link"
 export default async function PostPage({
   params,
 }: {
-  params: Promise<{ postId: string }>
+  params: { postId: string }
 }) {
-  const { postId } = await params
+  const { postId } = params
 
   const supabase = await createClient()
 
