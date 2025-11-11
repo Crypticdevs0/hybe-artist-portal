@@ -8,7 +8,7 @@ import { useEffect, useState } from "react"
 interface PasswordRequirement {
   id: string
   label: string
-  validator: (password: string) => boolean
+  validator: (pwd: string) => boolean
 }
 
 const requirements: PasswordRequirement[] = [
