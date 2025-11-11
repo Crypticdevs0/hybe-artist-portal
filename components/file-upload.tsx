@@ -8,6 +8,7 @@ const CheckCircle = dynamic(() => import("lucide-react").then((m) => m.CheckCirc
 import React, { useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 
+// eslint-disable-next-line no-unused-vars
 interface FileUploadProps {
   onUpload: (_url: string, _fileName: string, _thumbnailUrl?: string) => void
   maxSize?: number
