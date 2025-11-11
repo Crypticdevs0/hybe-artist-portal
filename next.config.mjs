@@ -54,4 +54,13 @@ const nextConfig = {
   },
 }
 
+nextConfig.headers = async () => {
+  return [
+    {
+      source: '/:path*',
+      headers: securityHeaders,
+    },
+  ]
+}
+
 export default withBundleAnalyzer(nextConfig)
