@@ -76,8 +76,8 @@ export function MessageThread({
           table: "messages",
           filter: `sender_id=eq.${recipientId},recipient_id=eq.${currentUserId}`,
         },
-        (payload) => {
-          const next = (payload as { new: unknown }).new
+        (payload: { new: unknown }) => {
+          const next = payload.new
           if (isMessage(next)) {
             setMessages((prev) => [...prev, next])
           }
@@ -87,7 +87,7 @@ export function MessageThread({
       .on("system", { event: "database_changes.confirm" }, () => {
         setIsConnected(true)
       })
-      .subscribe((status) => {
+      .subscribe((status: string) => {
         setIsConnected(status === "SUBSCRIBED")
       })
 
