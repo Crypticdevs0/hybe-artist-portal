@@ -6,10 +6,14 @@ export async function updateSession(request: NextRequest) {
     request,
   })
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  // Prefer server-only env vars to avoid leaking keys to the client bundle
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseKey) {
+    // If Supabase isn't configured on the server, continue without session handling
+    // This allows the app to still respond (useful for non-auth routes) while highlighting the misconfiguration.
+    console.warn('Supabase middleware: SUPABASE_URL or SUPABASE_ANON_KEY not configured on server')
     return supabaseResponse
   }
 

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
-import * as Sentry from "@sentry/node"
+import { NextResponse } from "next/server"
+import { initSentry, Sentry } from "@/lib/sentry/init"
 
 interface ErrorLog {
   context: string
@@ -9,14 +10,8 @@ interface ErrorLog {
   metadata?: Record<string, unknown>
 }
 
-// Initialize Sentry server-side if DSN is configured
-if (process.env.SENTRY_DSN) {
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    environment: process.env.NODE_ENV || "development",
-    tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE) || 0.1,
-  })
-}
+// Initialize Sentry if configured
+initSentry()
 
 export async function POST(request: Request) {
   try {
