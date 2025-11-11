@@ -41,7 +41,7 @@ const requirements: PasswordRequirement[] = [
 
 interface PasswordRequirementsProps {
   password: string
-  onValidityChange?: (isValid: boolean) => void
+  onValidityChange?: (_isValid: boolean) => void
 }
 
 export function PasswordRequirements({ password, onValidityChange }: PasswordRequirementsProps) {
