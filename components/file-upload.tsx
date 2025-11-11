@@ -1,15 +1,17 @@
 "use client"
 
+/* eslint-disable no-unused-vars */
 import dynamic from "next/dynamic"
 const UploadCloud = dynamic(() => import("lucide-react").then((m) => m.UploadCloud), { ssr: false })
 const X = dynamic(() => import("lucide-react").then((m) => m.X), { ssr: false })
 const AlertCircle = dynamic(() => import("lucide-react").then((m) => m.AlertCircle), { ssr: false })
 const CheckCircle = dynamic(() => import("lucide-react").then((m) => m.CheckCircle), { ssr: false })
-import { useRef, useState } from "react"
+import React, { useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 
+// eslint-disable-next-line no-unused-vars
 interface FileUploadProps {
-  onUpload: (url: string, fileName: string, thumbnailUrl?: string) => void
+  onUpload: (_url: string, _fileName: string, _thumbnailUrl?: string) => void
   maxSize?: number
   accept?: string
   label?: string

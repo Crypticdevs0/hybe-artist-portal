@@ -139,7 +139,7 @@ export function SearchBar() {
 
           {!isLoading && results && (results.posts.length === 0 && results.artists.length === 0) && (
             <div className="p-4 text-center text-sm text-muted-foreground">
-              No results found for "{query}"
+              No results found for &ldquo;{query}&rdquo;
             </div>
           )}
 
@@ -206,7 +206,7 @@ export function SearchBar() {
                   onClick={handleSearchSubmit}
                   className="w-full text-center px-3 py-2 text-sm text-primary hover:bg-muted transition-colors border-t border-border font-medium"
                 >
-                  View all results for "{query}"
+                  View all results for &ldquo;{query}&rdquo;
                 </button>
               )}
             </>

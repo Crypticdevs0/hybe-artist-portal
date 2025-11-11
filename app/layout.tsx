@@ -39,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans antialiased`}>
+      <body className={`${_geist.className} ${_geistMono.className} font-sans antialiased`}>
         <LoadingSpinner />
         {children}
         <Toaster />

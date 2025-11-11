@@ -5,10 +5,12 @@ const Check = dynamic(() => import("lucide-react").then((m) => m.Check), { ssr: 
 const X = dynamic(() => import("lucide-react").then((m) => m.X), { ssr: false })
 import { useEffect, useState } from "react"
 
+/* eslint-disable no-unused-vars */
+// eslint-disable-next-line no-unused-vars
 interface PasswordRequirement {
   id: string
   label: string
-  validator: (password: string) => boolean
+  validator: (pwd: string) => boolean
 }
 
 const requirements: PasswordRequirement[] = [
@@ -41,7 +43,7 @@ const requirements: PasswordRequirement[] = [
 
 interface PasswordRequirementsProps {
   password: string
-  onValidityChange?: (isValid: boolean) => void
+  onValidityChange?: (_isValid: boolean) => void
 }
 
 export function PasswordRequirements({ password, onValidityChange }: PasswordRequirementsProps) {

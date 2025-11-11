@@ -70,7 +70,7 @@ export default async function NotificationsPage() {
                 <Icon name="Bell" className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
               </div>
               <p className="text-base sm:text-lg font-semibold mb-2 text-foreground">No notifications yet</p>
-              <p className="text-sm text-muted-foreground">We'll notify you when something important happens</p>
+              <p className="text-sm text-muted-foreground">We&apos;ll notify you when something important happens</p>
             </Card>
           ) : (
             notifications.map((notification, index) => {
