@@ -9,7 +9,6 @@ export function LoadingSpinner() {
 
   useEffect(() => {
     const handleStart = () => setIsLoading(true)
-    const handleStop = () => setIsLoading(false)
 
     const originalPush = router.push
     const originalReplace = router.replace
