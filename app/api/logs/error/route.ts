@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-import { NextResponse } from "next/server"
 import { initSentry, Sentry } from "@/lib/sentry/init"
 
 interface ErrorLog {
