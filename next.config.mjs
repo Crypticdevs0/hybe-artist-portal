@@ -27,7 +27,7 @@ const securityHeaders = [
   {
     key: 'Content-Security-Policy',
     value:
-      "default-src 'self' https: data:; base-uri 'self'; font-src 'self' https: data:; img-src 'self' data: https:; script-src 'self' https:; style-src 'self' 'unsafe-inline' https:; connect-src 'self' https: ws:; frame-ancestors 'self';",
+      "default-src 'self' https: data:; base-uri 'self'; font-src 'self' https: data:; img-src 'self' data: https:; script-src 'self' https: *.supabase.co 'unsafe-inline'; style-src 'self' 'unsafe-inline' https:; connect-src 'self' https: *.supabase.co wss://*.supabase.co; frame-ancestors 'self';",
   },
 ]
 
