@@ -1,5 +1,6 @@
 "use client"
 
+/* eslint-disable no-unused-vars */
 import dynamic from "next/dynamic"
 const UploadCloud = dynamic(() => import("lucide-react").then((m) => m.UploadCloud), { ssr: false })
 const X = dynamic(() => import("lucide-react").then((m) => m.X), { ssr: false })
