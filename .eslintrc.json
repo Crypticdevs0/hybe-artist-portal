@@ -1,0 +1,12 @@
+{
+  "extends": ["next/core-web-vitals", "eslint:recommended"],
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "rules": {
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "@next/next/no-html-link-for-pages": "off"
+  }
+}
