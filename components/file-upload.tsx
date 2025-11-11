@@ -5,7 +5,7 @@ const UploadCloud = dynamic(() => import("lucide-react").then((m) => m.UploadClo
 const X = dynamic(() => import("lucide-react").then((m) => m.X), { ssr: false })
 const AlertCircle = dynamic(() => import("lucide-react").then((m) => m.AlertCircle), { ssr: false })
 const CheckCircle = dynamic(() => import("lucide-react").then((m) => m.CheckCircle), { ssr: false })
-import { useRef, useState } from "react"
+import React, { useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 
 interface FileUploadProps {
