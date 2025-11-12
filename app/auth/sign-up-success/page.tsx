@@ -1,27 +1,34 @@
+import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Icon from "@/components/ui/icon"
 
 export default function SignUpSuccessPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 via-white to-pink-50 p-6">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-purple-600">HYBE</h1>
-          <p className="text-muted-foreground mt-2">Artist Communication Portal</p>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/10 p-4 sm:p-6">
+      <div className="w-full max-w-md text-center">
+        <div className="inline-flex items-center gap-2 mb-4 sm:mb-6">
+          <Icon name="Sparkles" className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            HYBE
+          </h1>
         </div>
-        <Card>
-          <CardHeader className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100">
-              <Icon name="Mail" className="h-8 w-8 text-purple-600" />
-              </div>
-            <CardTitle className="text-2xl">Check Your Email</CardTitle>
-            <CardDescription>We&apos;ve sent you a confirmation link</CardDescription>
+        <Card className="border-primary/10 shadow-xl">
+          <CardHeader className="space-y-2 sm:space-y-3 pb-6">
+            <CardTitle className="text-2xl sm:text-3xl">Account Created!</CardTitle>
+            <CardDescription className="text-sm sm:text-base">
+              Please check your email to confirm your account.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="text-center">
+          <CardContent>
             <p className="text-sm text-muted-foreground">
-              Please check your email and click the confirmation link to activate your account. Once confirmed, you can
-              sign in and start connecting with artists.
+              Once you've confirmed your email, you can sign in to your account.
             </p>
+            <Link
+              href="/auth/login"
+              className="mt-6 inline-block w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            >
+              Back to Sign In
+            </Link>
           </CardContent>
         </Card>
       </div>
