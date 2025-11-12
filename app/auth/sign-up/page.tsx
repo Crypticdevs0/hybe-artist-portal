@@ -21,14 +21,12 @@ export default function SignUpPage() {
   const [isPasswordValid, setIsPasswordValid] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
   const router = useRouter()
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
-    setIsSuccess(false)
 
     if (password !== repeatPassword) {
       setError("Passwords do not match")
@@ -55,7 +53,7 @@ export default function SignUpPage() {
         },
       })
       if (error) throw error
-      setIsSuccess(true)
+      router.push("/auth/sign-up-success")
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {
@@ -143,11 +141,6 @@ export default function SignUpPage() {
                 {error && (
                   <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
                     {error}
-                  </div>
-                )}
-                {isSuccess && (
-                  <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-3 text-sm text-green-500">
-                    Success! Please check your email to confirm your account.
                   </div>
                 )}
                 <Button type="submit" className="w-full gradient-hybe text-white h-10 sm:h-11" disabled={isLoading}>

@@ -27,7 +27,9 @@ const securityHeaders = [
   {
     key: 'Content-Security-Policy',
     value:
-      "default-src 'self' https: data:; base-uri 'self'; font-src 'self' https: data:; img-src 'self' data: https:; script-src 'self' https: *.supabase.co 'unsafe-inline'; style-src 'self' 'unsafe-inline' https:; connect-src 'self' https: *.supabase.co wss://*.supabase.co; frame-ancestors 'self';",
+      // Supabase requires 'unsafe-inline' for the script-src directive.
+      // See: https://github.com/supabase/supabase/issues/122
+      "default-src 'self'; script-src 'self' 'unsafe-inline' *.supabase.co; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' *.supabase.co wss://*.supabase.co; frame-ancestors 'self';",
   },
 ]
 
@@ -38,8 +40,6 @@ const nextConfig = {
   },
   images: {
     unoptimized: false,
-    // Allow loading images from Vercel Blob and common external hosts.
-    // In production, set VERCEL_BLOB_HOST env var to your blob host (e.g. "<org>.vercel-storage.com")
     remotePatterns: [
       {
         protocol: 'https',
