@@ -19,7 +19,7 @@ import { FileUpload } from "@/components/file-upload"
 const Plus = dynamic(() => import("lucide-react").then((m) => m.Plus), { ssr: false })
 const Loader2 = dynamic(() => import("lucide-react").then((m) => m.Loader2), { ssr: false })
 import { useState } from "react"
-import { createClient } from "@/lib/supabase/client"
+import useSupabaseBrowserClient from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { logError } from "@/lib/error-logger"
@@ -37,6 +37,7 @@ export function CreatePostDialog({ artistId }: CreatePostDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+  const supabase = useSupabaseBrowserClient()
 
   const isTitleValid = title.trim().length >= 3
   const isContentValid = content.trim().length >= 10
@@ -47,8 +48,6 @@ export function CreatePostDialog({ artistId }: CreatePostDialogProps) {
     if (!canSubmit) return
 
     setIsSubmitting(true)
-
-    const supabase = createClient()
 
     try {
       const { error } = await supabase.from("posts").insert({

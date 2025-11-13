@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { createClient } from "@/lib/supabase/client"
+import useSupabaseBrowserClient from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -22,6 +22,7 @@ export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const supabase = useSupabaseBrowserClient()
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,7 +42,6 @@ export default function SignUpPage() {
     }
 
     try {
-      const supabase = createClient()
       const { error } = await supabase.auth.signUp({
         email,
         password,

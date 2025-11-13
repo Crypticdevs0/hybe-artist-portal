@@ -11,7 +11,7 @@ const Calendar = dynamic(() => import("lucide-react").then((m) => m.Calendar), {
 const Upload = dynamic(() => import("lucide-react").then((m) => m.Upload), { ssr: false })
 import { format } from "date-fns"
 import { useState } from "react"
-import { createClient } from "@/lib/supabase/client"
+import useSupabaseBrowserClient from "@/lib/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { logError } from "@/lib/error-logger"
 
@@ -33,6 +33,7 @@ export function ProfileSection({ profile: initialProfile }: ProfileSectionProps)
   const [profile, setProfile] = useState(initialProfile)
   const [isUpdatingAvatar, setIsUpdatingAvatar] = useState(false)
   const { toast } = useToast()
+  const supabase = useSupabaseBrowserClient()
 
   const subscriptionBadgeColor = {
     basic: "bg-muted-foreground",
@@ -42,8 +43,6 @@ export function ProfileSection({ profile: initialProfile }: ProfileSectionProps)
 
   const handleAvatarUpload = async (url: string) => {
     setIsUpdatingAvatar(true)
-
-    const supabase = createClient()
 
     try {
       const { error } = await supabase

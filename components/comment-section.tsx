@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
-import { createClient } from "@/lib/supabase/client"
+import useSupabaseBrowserClient from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
 import { logError } from "@/lib/error-logger"
@@ -40,13 +40,13 @@ export function CommentSection({
   const [newComment, setNewComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
+  const supabase = useSupabaseBrowserClient()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newComment.trim() || isSubmitting) return
 
     setIsSubmitting(true)
-    const supabase = createClient()
 
     try {
       const { data, error } = await supabase

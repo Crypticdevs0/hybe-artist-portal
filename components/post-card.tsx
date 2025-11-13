@@ -9,7 +9,7 @@ const Heart = dynamic(() => import("lucide-react").then((m) => m.Heart), { ssr: 
 const MessageCircle = dynamic(() => import("lucide-react").then((m) => m.MessageCircle), { ssr: false })
 const Share2 = dynamic(() => import("lucide-react").then((m) => m.Share2), { ssr: false })
 import { useState } from "react"
-import { createClient } from "@/lib/supabase/client"
+import useSupabaseBrowserClient from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
 import { logError } from "@/lib/error-logger"
@@ -40,12 +40,12 @@ export function PostCard({ post, onLike, onComment }: PostCardProps) {
   const [likeCount, setLikeCount] = useState(post.likes.length)
   const [isLiking, setIsLiking] = useState(false)
   const { toast } = useToast()
+  const supabase = useSupabaseBrowserClient()
 
   const handleLike = async () => {
     if (isLiking) return
     setIsLiking(true)
 
-    const supabase = createClient()
     const {
       data: { user },
     } = await supabase.auth.getUser()
