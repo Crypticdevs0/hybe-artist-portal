@@ -36,12 +36,12 @@ export function SearchBar() {
   const [results, setResults] = useState<SearchResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const searchContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
         setIsOpen(false)
       }
     }
@@ -94,7 +94,7 @@ export function SearchBar() {
   }
 
   return (
-    <div className="relative flex-1 max-w-md">
+    <div className="relative flex-1 max-w-md" ref={searchContainerRef}>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
@@ -128,7 +128,6 @@ export function SearchBar() {
 
       {isOpen && query.trim() && (
         <div
-          ref={dropdownRef}
           className="absolute top-full left-0 right-0 mt-2 z-50 bg-popover border border-border rounded-lg shadow-lg"
         >
           {isLoading && (
