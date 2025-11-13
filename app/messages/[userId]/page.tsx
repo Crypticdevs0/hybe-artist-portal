@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import Icon from "@/components/ui/icon"
 import Link from "next/link"
+import { getUser } from "@/lib/get-user"
 
 interface MessagePageProps {
   params: Promise<{
@@ -17,16 +18,13 @@ interface MessagePageProps {
 
 export default async function MessagePage({ params }: MessagePageProps) {
   const { userId } = await params
-  const supabase = await createClient()
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
-
-  if (error || !user) {
+  const user = await getUser()
+  if (!user) {
     redirect("/auth/login")
   }
+
+  const supabase = await createClient()
 
   // Get current user's profile
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()

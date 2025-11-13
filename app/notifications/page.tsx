@@ -4,18 +4,15 @@ import { DashboardNav } from "@/components/dashboard-nav"
 import { Card, CardContent } from "@/components/ui/card"
 import { formatDistanceToNow } from "date-fns"
 import Icon from "@/components/ui/icon"
+import { getUser } from "@/lib/get-user"
 
 export default async function NotificationsPage() {
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
-
-  if (error || !user) {
+  const user = await getUser()
+  if (!user) {
     redirect("/auth/login")
   }
+
+  const supabase = await createClient()
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
 

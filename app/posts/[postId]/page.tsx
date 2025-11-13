@@ -6,6 +6,7 @@ import { CommentSection } from "@/components/comment-section"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Icon from "@/components/ui/icon"
 import Link from "next/link"
+import { getUser } from "@/lib/get-user"
 
 export default async function PostPage({
   params,
@@ -14,16 +15,12 @@ export default async function PostPage({
 }) {
   const { postId } = params
 
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
-
-  if (error || !user) {
+  const user = await getUser()
+  if (!user) {
     redirect("/auth/login")
   }
+
+  const supabase = await createClient()
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
 

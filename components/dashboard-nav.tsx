@@ -11,7 +11,7 @@ const LogOut = dynamic(() => import("lucide-react").then((mod) => mod.LogOut), {
 const Menu = dynamic(() => import("lucide-react").then((mod) => mod.Menu), { ssr: false })
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
+import useSupabaseBrowserClient from "@/lib/supabase/client"
 import { useState } from "react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { SearchBar } from "@/components/search-bar"
@@ -25,10 +25,10 @@ export function DashboardNav({ userRole }: DashboardNavProps) {
   const router = useRouter()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
+  const supabase = useSupabaseBrowserClient()
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
-    const supabase = createClient()
     await supabase.auth.signOut()
     router.push("/auth/login")
   }

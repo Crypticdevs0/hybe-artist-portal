@@ -7,18 +7,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { getUser } from "@/lib/get-user"
 
 export default async function AdminArtistsPage() {
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
-
-  if (error || !user) {
+  const user = await getUser()
+  if (!user) {
     redirect("/auth/login")
   }
+
+  const supabase = await createClient()
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 

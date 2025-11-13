@@ -5,18 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, FileText, MessageSquare, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { getUser } from "@/lib/get-user"
 
 export default async function AdminPage() {
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
-
-  if (error || !user) {
+  const user = await getUser()
+  if (!user) {
     redirect("/auth/login")
   }
+
+  const supabase = await createClient()
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 

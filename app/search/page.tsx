@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { PostCard } from "@/components/post-card"
 import Icon from "@/components/ui/icon"
 import Link from "next/link"
+import { getUser } from "@/lib/get-user"
 
 interface SearchParams {
   q?: string
@@ -20,16 +21,12 @@ export default async function SearchPage({
   const params = await searchParams
   const query = params.q?.trim()
 
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
-
-  if (error || !user) {
+  const user = await getUser()
+  if (!user) {
     redirect("/auth/login")
   }
+
+  const supabase = await createClient()
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
 

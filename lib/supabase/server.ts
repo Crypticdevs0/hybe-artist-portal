@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
+import { env } from "@/lib/env.mjs"
 
 /**
  * createClient - server-side Supabase client that uses server-only env variables.
@@ -10,14 +11,7 @@ import { cookies } from "next/headers"
 export async function createClient() {
   const cookieStore = await cookies()
 
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  if (!url || !anonKey) {
-    throw new Error('Supabase URL or Anon key is not configured on the server (SUPABASE_URL / SUPABASE_ANON_KEY)')
-  }
-
-  return createServerClient(url, anonKey, {
+  return createServerClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, {
     cookies: {
       getAll() {
         return cookieStore.getAll()
@@ -41,17 +35,10 @@ export async function createClient() {
  * and avoid exposing the service role key to the client.
  */
 export function createServiceRoleClient() {
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!url || !serviceKey) {
-    throw new Error('Supabase URL or SERVICE ROLE key is not configured (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY)')
-  }
-
   // Provide minimal cookie methods required by the server client types.
   // Service role client runs in trusted server environments and does not
   // rely on request cookies, so getAll returns an empty array and setAll is a no-op.
-  return createServerClient(url, serviceKey, {
+  return createServerClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
     cookies: {
       getAll() {
         return []

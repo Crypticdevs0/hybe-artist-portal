@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 const Send = dynamic(() => import("lucide-react").then((m) => m.Send), { ssr: false })
 const AlertCircle = dynamic(() => import("lucide-react").then((m) => m.AlertCircle), { ssr: false })
 import { useState, useEffect, useRef } from "react"
-import { createClient } from "@/lib/supabase/client"
+import useSupabaseBrowserClient from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 const Loader2 = dynamic(() => import("lucide-react").then((m) => m.Loader2), { ssr: false })
 import { logError } from "@/lib/error-logger"
@@ -54,7 +54,7 @@ export function MessageThread({
   const [isConnected, setIsConnected] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const supabase = createClient()
+  const supabase = useSupabaseBrowserClient()
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })

@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { createClient } from "@/lib/supabase/client"
+import useSupabaseBrowserClient from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import Icon from "@/components/ui/icon"
+import { env } from "@/lib/env.mjs"
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("")
@@ -22,6 +23,7 @@ export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const supabase = useSupabaseBrowserClient()
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,12 +43,11 @@ export default function SignUpPage() {
     }
 
     try {
-      const supabase = createClient()
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/dashboard`,
+          emailRedirectTo: env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${env.NEXT_PUBLIC_BASE_URL}/dashboard`,
           data: {
             display_name: displayName,
           },

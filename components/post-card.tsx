@@ -9,10 +9,11 @@ const Heart = dynamic(() => import("lucide-react").then((m) => m.Heart), { ssr: 
 const MessageCircle = dynamic(() => import("lucide-react").then((m) => m.MessageCircle), { ssr: false })
 const Share2 = dynamic(() => import("lucide-react").then((m) => m.Share2), { ssr: false })
 import { useState } from "react"
-import { createClient } from "@/lib/supabase/client"
+import useSupabaseBrowserClient from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
 import { logError } from "@/lib/error-logger"
+import { useUser } from "@/hooks/use-user"
 
 interface PostCardProps {
   post: {
@@ -40,17 +41,12 @@ export function PostCard({ post, onLike, onComment }: PostCardProps) {
   const [likeCount, setLikeCount] = useState(post.likes.length)
   const [isLiking, setIsLiking] = useState(false)
   const { toast } = useToast()
+  const supabase = useSupabaseBrowserClient()
+  const { user, loading } = useUser()
 
   const handleLike = async () => {
-    if (isLiking) return
+    if (isLiking || loading || !user) return
     setIsLiking(true)
-
-    const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) return
 
     try {
       if (isLiked) {
@@ -122,7 +118,7 @@ export function PostCard({ post, onLike, onComment }: PostCardProps) {
           variant="ghost"
           size="sm"
           onClick={handleLike}
-          disabled={isLiking}
+          disabled={isLiking || loading}
           className={`${isLiked ? "text-primary" : ""} hover:bg-primary/5 flex-1 sm:flex-none transition-all duration-200 ${isLiked ? "scale-110" : ""}`}
         >
           <Heart

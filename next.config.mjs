@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
+import { env } from './lib/env.mjs'
 import bundleAnalyzer from '@next/bundle-analyzer'
 
-const withBundleAnalyzer = bundleAnalyzer({ enabled: process.env.ANALYZE === 'true' })
+const withBundleAnalyzer = bundleAnalyzer({ enabled: env.ANALYZE === 'true' })
 
 const securityHeaders = [
   {
@@ -43,7 +44,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: process.env.VERCEL_BLOB_HOST || 'public.blob.vercel-storage.com',
+        hostname: env.VERCEL_BLOB_HOST || 'public.blob.vercel-storage.com',
         pathname: '/**',
       },
       {
