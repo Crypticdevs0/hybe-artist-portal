@@ -23,12 +23,14 @@ export default function SignUpSuccessPage() {
             <p className="text-sm text-muted-foreground">
               Once you've confirmed your email, you can sign in to your account.
             </p>
-            <Link
-              href="/auth/login"
-              className="mt-6 inline-block w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-            >
-              Back to Sign In
-            </Link>
+            <div className="mt-6">
+              <Link
+                href="/auth/login"
+                className="inline-block w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
+              >
+                Back to Sign In
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>
