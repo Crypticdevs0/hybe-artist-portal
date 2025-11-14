@@ -125,7 +125,7 @@ export function MessageThread({
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newMessage.trim() && attachedFiles.length === 0 || isSending || !isConnected) return
+    if ((!newMessage.trim() && attachedFiles.length === 0) || isSending || !isConnected) return
 
     setIsSending(true)
     setError(null)
@@ -136,7 +136,7 @@ export function MessageThread({
         .insert({
           sender_id: currentUserId,
           recipient_id: recipientId,
-          content: newMessage.trim(),
+          content: newMessage.trim() || (attachedFiles.length > 0 ? "[Shared a file]" : ""),
         })
         .select()
         .single()
@@ -149,6 +149,7 @@ export function MessageThread({
       setNewMessage("")
       setAttachedFiles([])
       setShowFileUpload(false)
+      setTempMessageId(null)
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto"
       }
@@ -168,26 +169,41 @@ export function MessageThread({
     setError(errorMsg)
   }
 
-  const createMessageForUpload = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("messages")
-        .insert({
-          sender_id: currentUserId,
-          recipient_id: recipientId,
-          content: newMessage.trim() || "[Shared a file]",
-        })
-        .select()
-        .single()
+  const toggleFileUpload = async () => {
+    if (!showFileUpload) {
+      try {
+        const { data, error } = await supabase
+          .from("messages")
+          .insert({
+            sender_id: currentUserId,
+            recipient_id: recipientId,
+            content: "[Preparing message...]",
+          })
+          .select()
+          .single()
 
-      if (error) throw error
-      if (isMessage(data)) {
-        setTempMessageId(data.id)
-        return data.id
+        if (error) throw error
+        if (isMessage(data)) {
+          setTempMessageId(data.id)
+          setShowFileUpload(true)
+        }
+      } catch (err) {
+        logError("create_message_for_upload", err, { recipient_id: recipientId })
+        setError("Failed to prepare file upload")
       }
-    } catch (err) {
-      logError("create_message_for_upload", err, { recipient_id: recipientId })
-      throw err
+    } else {
+      setShowFileUpload(false)
+      if (tempMessageId && attachedFiles.length === 0) {
+        try {
+          await supabase
+            .from("messages")
+            .delete()
+            .eq("id", tempMessageId)
+        } catch (err) {
+          console.warn("Failed to clean up temporary message:", err)
+        }
+      }
+      setTempMessageId(null)
     }
   }
 
