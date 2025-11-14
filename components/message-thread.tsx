@@ -277,7 +277,7 @@ export function MessageThread({
       </div>
 
       {/* Input Area */}
-      <form onSubmit={handleSend} className="border-t border-primary/10 p-3 sm:p-4 bg-card/80 backdrop-blur-sm">
+      <form onSubmit={handleSend} className="border-t border-primary/10 p-3 sm:p-4 bg-card/80 backdrop-blur-sm space-y-3">
         {error && (
           <div className="mb-3 p-2 sm:p-3 bg-destructive/10 text-destructive rounded-lg flex items-start gap-2 text-xs sm:text-sm">
             <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
@@ -290,6 +290,15 @@ export function MessageThread({
             <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
             <span>Reconnecting to chat...</span>
           </div>
+        )}
+
+        {showFileUpload && tempMessageId && (
+          <ChatFileUpload
+            messageId={tempMessageId}
+            onFileUpload={handleFileUpload}
+            onError={handleUploadError}
+            disabled={isSending}
+          />
         )}
 
         <div className="flex gap-2">
@@ -310,7 +319,7 @@ export function MessageThread({
           />
           <Button
             type="submit"
-            disabled={!newMessage.trim() || isSending || !isConnected}
+            disabled={(!newMessage.trim() && attachedFiles.length === 0) || isSending || !isConnected}
             className="gradient-hybe text-white hover:opacity-90 shrink-0"
             size="icon"
             title={isSending ? "Sending..." : "Send message (Enter)"}
@@ -322,7 +331,7 @@ export function MessageThread({
             )}
           </Button>
         </div>
-        <p className="text-[10px] sm:text-xs text-muted-foreground mt-2 px-1">
+        <p className="text-[10px] sm:text-xs text-muted-foreground px-1">
           Press Enter to send, Shift+Enter for new line
         </p>
       </form>
