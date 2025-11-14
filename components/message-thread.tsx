@@ -125,7 +125,7 @@ export function MessageThread({
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newMessage.trim() || isSending || !isConnected) return
+    if (!newMessage.trim() && attachedFiles.length === 0 || isSending || !isConnected) return
 
     setIsSending(true)
     setError(null)
@@ -144,9 +144,11 @@ export function MessageThread({
       if (error) throw error
 
       if (isMessage(data)) {
-      setMessages((prev) => [...prev, data])
+        setMessages((prev) => [...prev, data])
       }
       setNewMessage("")
+      setAttachedFiles([])
+      setShowFileUpload(false)
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto"
       }
@@ -155,6 +157,37 @@ export function MessageThread({
       setError("Failed to send message. Please check your connection and try again.")
     } finally {
       setIsSending(false)
+    }
+  }
+
+  const handleFileUpload = (file: UploadedFile) => {
+    setAttachedFiles((prev) => [...prev, file])
+  }
+
+  const handleUploadError = (errorMsg: string) => {
+    setError(errorMsg)
+  }
+
+  const createMessageForUpload = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("messages")
+        .insert({
+          sender_id: currentUserId,
+          recipient_id: recipientId,
+          content: newMessage.trim() || "[Shared a file]",
+        })
+        .select()
+        .single()
+
+      if (error) throw error
+      if (isMessage(data)) {
+        setTempMessageId(data.id)
+        return data.id
+      }
+    } catch (err) {
+      logError("create_message_for_upload", err, { recipient_id: recipientId })
+      throw err
     }
   }
 
