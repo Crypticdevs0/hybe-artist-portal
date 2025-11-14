@@ -62,7 +62,9 @@ export default function ResetPasswordPage() {
         router.push("/dashboard")
       }, 2000)
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Failed to reset password")
+      const errorMessage = error instanceof Error ? error.message : "Failed to reset password"
+      setError(errorMessage)
+      console.error("Reset password error:", error)
     } finally {
       setIsLoading(false)
     }
