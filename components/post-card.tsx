@@ -50,7 +50,10 @@ export function PostCard({ post, onLike, onComment }: PostCardProps) {
       data: { user },
     } = await supabase.auth.getUser()
 
-    if (!user) return
+    if (!user) {
+      setIsLiking(false)
+      return
+    }
 
     try {
       if (isLiked) {
