@@ -51,6 +51,11 @@ const nextConfig = {
         hostname: '*.vercel.app',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+        pathname: '/**',
+      },
     ],
   },
 }

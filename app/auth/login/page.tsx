@@ -33,7 +33,9 @@ export default function LoginPage() {
       if (error) throw error
       router.push("/dashboard")
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred")
+      const errorMessage = error instanceof Error ? error.message : "An error occurred while signing in"
+      setError(errorMessage)
+      console.error("Login error:", error)
     } finally {
       setIsLoading(false)
     }

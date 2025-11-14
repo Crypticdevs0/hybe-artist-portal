@@ -35,10 +35,12 @@ export default function ForgotPasswordPage() {
       })
       setEmail("")
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to send reset email"
       setMessage({
         type: "error",
-        text: error instanceof Error ? error.message : "Failed to send reset email",
+        text: errorMessage,
       })
+      console.error("Forgot password error:", error)
     } finally {
       setIsLoading(false)
     }

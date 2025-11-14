@@ -17,13 +17,14 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
             Oops! Something went wrong
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8 max-w-md mx-auto">
-            We encountered an unexpected error. Please try again later. If the problem persists, contact support.
+            We encountered an unexpected error. This might be due to missing environment configuration. Please try again later. If the problem persists, contact support.
           </p>
           {process.env.NODE_ENV === "development" && (
-            <div className="text-left bg-muted/50 p-4 rounded-lg text-xs text-muted-foreground overflow-auto max-h-40 mb-6">
-              <p className="font-semibold">Error Details:</p>
-              <pre className="whitespace-pre-wrap">{error.message}</pre>
-              {error.digest && <p>Digest: {error.digest}</p>}
+            <div className="text-left bg-muted/50 p-4 rounded-lg text-xs text-muted-foreground overflow-auto max-h-48 mb-6 space-y-2">
+              <p className="font-semibold text-destructive">Error Details:</p>
+              <pre className="whitespace-pre-wrap font-mono text-xs">{error.message}</pre>
+              {error.digest && <p className="text-xs">Digest: {error.digest}</p>}
+              <p className="text-xs italic">Check browser console for more details</p>
             </div>
           )}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">

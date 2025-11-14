@@ -55,7 +55,9 @@ export default function SignUpPage() {
       if (error) throw error
       router.push("/auth/sign-up-success")
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred")
+      const errorMessage = error instanceof Error ? error.message : "An error occurred while creating your account"
+      setError(errorMessage)
+      console.error("Sign-up error:", error)
     } finally {
       setIsLoading(false)
     }

@@ -8,17 +8,33 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 const Send = dynamic(() => import("lucide-react").then((m) => m.Send), { ssr: false })
 const AlertCircle = dynamic(() => import("lucide-react").then((m) => m.AlertCircle), { ssr: false })
+const FileText = dynamic(() => import("lucide-react").then((m) => m.FileText), { ssr: false })
+const Play = dynamic(() => import("lucide-react").then((m) => m.Play), { ssr: false })
+const Music = dynamic(() => import("lucide-react").then((m) => m.Music), { ssr: false })
+const Image = dynamic(() => import("lucide-react").then((m) => m.Image), { ssr: false })
+const Paperclip = dynamic(() => import("lucide-react").then((m) => m.Paperclip), { ssr: false })
 import { useState, useEffect, useRef } from "react"
 import useSupabaseBrowserClient from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 const Loader2 = dynamic(() => import("lucide-react").then((m) => m.Loader2), { ssr: false })
 import { logError } from "@/lib/error-logger"
+import { ChatFileUpload, type UploadedFile } from "@/components/chat-file-upload"
+
+interface Attachment {
+  id?: string
+  file_name: string
+  file_size: number
+  file_type: string
+  storage_path: string
+  url?: string
+}
 
 interface Message {
   id: string
   content: string
   sender_id: string
   created_at: string
+  attachments?: Attachment[]
 }
 
 const isMessage = (value: unknown): value is Message => {
@@ -52,6 +68,9 @@ export function MessageThread({
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isConnected, setIsConnected] = useState(true)
+  const [showFileUpload, setShowFileUpload] = useState(false)
+  const [tempMessageId, setTempMessageId] = useState<string | null>(null)
+  const [attachedFiles, setAttachedFiles] = useState<UploadedFile[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const supabase = useSupabaseBrowserClient()
@@ -107,7 +126,7 @@ export function MessageThread({
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newMessage.trim() || isSending || !isConnected) return
+    if ((!newMessage.trim() && attachedFiles.length === 0) || isSending || !isConnected) return
 
     setIsSending(true)
     setError(null)
@@ -118,7 +137,7 @@ export function MessageThread({
         .insert({
           sender_id: currentUserId,
           recipient_id: recipientId,
-          content: newMessage.trim(),
+          content: newMessage.trim() || (attachedFiles.length > 0 ? "[Shared a file]" : ""),
         })
         .select()
         .single()
@@ -126,9 +145,12 @@ export function MessageThread({
       if (error) throw error
 
       if (isMessage(data)) {
-      setMessages((prev) => [...prev, data])
+        setMessages((prev) => [...prev, data])
       }
       setNewMessage("")
+      setAttachedFiles([])
+      setShowFileUpload(false)
+      setTempMessageId(null)
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto"
       }
@@ -137,6 +159,52 @@ export function MessageThread({
       setError("Failed to send message. Please check your connection and try again.")
     } finally {
       setIsSending(false)
+    }
+  }
+
+  const handleFileUpload = (file: UploadedFile) => {
+    setAttachedFiles((prev) => [...prev, file])
+  }
+
+  const handleUploadError = (errorMsg: string) => {
+    setError(errorMsg)
+  }
+
+  const toggleFileUpload = async () => {
+    if (!showFileUpload) {
+      try {
+        const { data, error } = await supabase
+          .from("messages")
+          .insert({
+            sender_id: currentUserId,
+            recipient_id: recipientId,
+            content: "[Preparing message...]",
+          })
+          .select()
+          .single()
+
+        if (error) throw error
+        if (isMessage(data)) {
+          setTempMessageId(data.id)
+          setShowFileUpload(true)
+        }
+      } catch (err) {
+        logError("create_message_for_upload", err, { recipient_id: recipientId })
+        setError("Failed to prepare file upload")
+      }
+    } else {
+      setShowFileUpload(false)
+      if (tempMessageId && attachedFiles.length === 0) {
+        try {
+          await supabase
+            .from("messages")
+            .delete()
+            .eq("id", tempMessageId)
+        } catch (err) {
+          console.warn("Failed to clean up temporary message:", err)
+        }
+      }
+      setTempMessageId(null)
     }
   }
 
@@ -177,7 +245,42 @@ export function MessageThread({
                         : "bg-muted text-foreground border border-primary/5"
                     }`}
                   >
-                    <p className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                    {message.content && (
+                      <p className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                    )}
+                    {message.attachments && message.attachments.length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {message.attachments.map((attachment, idx) => (
+                          <a
+                            key={`${attachment.storage_path}-${idx}`}
+                            href={attachment.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`flex items-center gap-2 text-xs px-2 py-1 rounded transition-opacity hover:opacity-80 ${
+                              isOwn
+                                ? "bg-primary-foreground/20 text-primary-foreground"
+                                : "bg-primary/10 text-primary"
+                            }`}
+                          >
+                            {attachment.file_type.startsWith("image/") && (
+                              <Image className="h-3 w-3 flex-shrink-0" />
+                            )}
+                            {attachment.file_type.startsWith("video/") && (
+                              <Play className="h-3 w-3 flex-shrink-0" />
+                            )}
+                            {attachment.file_type.startsWith("audio/") && (
+                              <Music className="h-3 w-3 flex-shrink-0" />
+                            )}
+                            {!attachment.file_type.startsWith("image/") &&
+                              !attachment.file_type.startsWith("video/") &&
+                              !attachment.file_type.startsWith("audio/") && (
+                                <FileText className="h-3 w-3 flex-shrink-0" />
+                              )}
+                            <span className="truncate">{attachment.file_name}</span>
+                          </a>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <span className="text-[10px] sm:text-xs text-muted-foreground px-1">
                     {formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}
@@ -191,7 +294,7 @@ export function MessageThread({
       </div>
 
       {/* Input Area */}
-      <form onSubmit={handleSend} className="border-t border-primary/10 p-3 sm:p-4 bg-card/80 backdrop-blur-sm">
+      <form onSubmit={handleSend} className="border-t border-primary/10 p-3 sm:p-4 bg-card/80 backdrop-blur-sm space-y-3">
         {error && (
           <div className="mb-3 p-2 sm:p-3 bg-destructive/10 text-destructive rounded-lg flex items-start gap-2 text-xs sm:text-sm">
             <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
@@ -204,6 +307,15 @@ export function MessageThread({
             <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
             <span>Reconnecting to chat...</span>
           </div>
+        )}
+
+        {showFileUpload && tempMessageId && (
+          <ChatFileUpload
+            messageId={tempMessageId}
+            onFileUpload={handleFileUpload}
+            onError={handleUploadError}
+            disabled={isSending}
+          />
         )}
 
         <div className="flex gap-2">
@@ -222,21 +334,34 @@ export function MessageThread({
             disabled={isSending || !isConnected}
             rows={1}
           />
-          <Button
-            type="submit"
-            disabled={!newMessage.trim() || isSending || !isConnected}
-            className="gradient-hybe text-white hover:opacity-90 shrink-0"
-            size="icon"
-            title={isSending ? "Sending..." : "Send message (Enter)"}
-          >
-            {isSending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4" />
-            )}
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button
+              type="submit"
+              disabled={(!newMessage.trim() && attachedFiles.length === 0) || isSending || !isConnected}
+              className="gradient-hybe text-white hover:opacity-90 shrink-0"
+              size="icon"
+              title={isSending ? "Sending..." : "Send message (Enter)"}
+            >
+              {isSending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              type="button"
+              onClick={toggleFileUpload}
+              disabled={isSending || !isConnected}
+              variant={showFileUpload ? "default" : "outline"}
+              className="shrink-0"
+              size="icon"
+              title={showFileUpload ? "Hide file upload" : "Attach files"}
+            >
+              <Paperclip className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-        <p className="text-[10px] sm:text-xs text-muted-foreground mt-2 px-1">
+        <p className="text-[10px] sm:text-xs text-muted-foreground px-1">
           Press Enter to send, Shift+Enter for new line
         </p>
       </form>
