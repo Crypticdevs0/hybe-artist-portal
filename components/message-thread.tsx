@@ -8,17 +8,32 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 const Send = dynamic(() => import("lucide-react").then((m) => m.Send), { ssr: false })
 const AlertCircle = dynamic(() => import("lucide-react").then((m) => m.AlertCircle), { ssr: false })
+const FileText = dynamic(() => import("lucide-react").then((m) => m.FileText), { ssr: false })
+const Play = dynamic(() => import("lucide-react").then((m) => m.Play), { ssr: false })
+const Music = dynamic(() => import("lucide-react").then((m) => m.Music), { ssr: false })
+const Image = dynamic(() => import("lucide-react").then((m) => m.Image), { ssr: false })
 import { useState, useEffect, useRef } from "react"
 import useSupabaseBrowserClient from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 const Loader2 = dynamic(() => import("lucide-react").then((m) => m.Loader2), { ssr: false })
 import { logError } from "@/lib/error-logger"
+import { ChatFileUpload, type UploadedFile } from "@/components/chat-file-upload"
+
+interface Attachment {
+  id?: string
+  file_name: string
+  file_size: number
+  file_type: string
+  storage_path: string
+  url?: string
+}
 
 interface Message {
   id: string
   content: string
   sender_id: string
   created_at: string
+  attachments?: Attachment[]
 }
 
 const isMessage = (value: unknown): value is Message => {
