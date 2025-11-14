@@ -1,17 +1,14 @@
 import { Card } from "@/components/ui/card"
 import { redirect } from "next/navigation"
+
+export const revalidate = 3600 // revalidate every hour
 import { createClient } from "@/lib/supabase/server"
 import { DashboardNav } from "@/components/dashboard-nav"
 import { PostCard } from "@/components/post-card"
 import Icon from "@/components/ui/icon"
 
 export default async function DashboardPage() {
-  let supabase
-  try {
-    supabase = await createClient()
-  } catch (error) {
-    throw new Error("Failed to initialize Supabase client. Please check your environment variables.")
-  }
+  const supabase = await createClient()
 
   const {
     data: { user },
