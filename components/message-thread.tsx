@@ -333,19 +333,32 @@ export function MessageThread({
             disabled={isSending || !isConnected}
             rows={1}
           />
-          <Button
-            type="submit"
-            disabled={(!newMessage.trim() && attachedFiles.length === 0) || isSending || !isConnected}
-            className="gradient-hybe text-white hover:opacity-90 shrink-0"
-            size="icon"
-            title={isSending ? "Sending..." : "Send message (Enter)"}
-          >
-            {isSending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4" />
-            )}
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button
+              type="submit"
+              disabled={(!newMessage.trim() && attachedFiles.length === 0) || isSending || !isConnected}
+              className="gradient-hybe text-white hover:opacity-90 shrink-0"
+              size="icon"
+              title={isSending ? "Sending..." : "Send message (Enter)"}
+            >
+              {isSending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              type="button"
+              onClick={toggleFileUpload}
+              disabled={isSending || !isConnected}
+              variant={showFileUpload ? "default" : "outline"}
+              className="shrink-0"
+              size="icon"
+              title={showFileUpload ? "Hide file upload" : "Attach files"}
+            >
+              <Paperclip className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
         <p className="text-[10px] sm:text-xs text-muted-foreground px-1">
           Press Enter to send, Shift+Enter for new line
