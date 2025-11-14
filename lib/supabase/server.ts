@@ -10,8 +10,8 @@ import { cookies } from "next/headers"
 export async function createClient() {
   const cookieStore = await cookies()
 
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const url = process.env.SUPABASE_URL
+  const anonKey = process.env.SUPABASE_ANON_KEY
 
   if (!url || !anonKey) {
     throw new Error('Supabase URL or Anon key is not configured on the server (SUPABASE_URL / SUPABASE_ANON_KEY)')
@@ -41,7 +41,7 @@ export async function createClient() {
  * and avoid exposing the service role key to the client.
  */
 export function createServiceRoleClient() {
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+  const url = process.env.SUPABASE_URL
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!url || !serviceKey) {
