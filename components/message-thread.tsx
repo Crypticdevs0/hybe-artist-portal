@@ -12,6 +12,7 @@ const FileText = dynamic(() => import("lucide-react").then((m) => m.FileText), {
 const Play = dynamic(() => import("lucide-react").then((m) => m.Play), { ssr: false })
 const Music = dynamic(() => import("lucide-react").then((m) => m.Music), { ssr: false })
 const Image = dynamic(() => import("lucide-react").then((m) => m.Image), { ssr: false })
+const Paperclip = dynamic(() => import("lucide-react").then((m) => m.Paperclip), { ssr: false })
 import { useState, useEffect, useRef } from "react"
 import useSupabaseBrowserClient from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
