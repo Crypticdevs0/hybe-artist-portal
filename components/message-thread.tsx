@@ -228,7 +228,42 @@ export function MessageThread({
                         : "bg-muted text-foreground border border-primary/5"
                     }`}
                   >
-                    <p className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                    {message.content && (
+                      <p className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                    )}
+                    {message.attachments && message.attachments.length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {message.attachments.map((attachment, idx) => (
+                          <a
+                            key={`${attachment.storage_path}-${idx}`}
+                            href={attachment.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`flex items-center gap-2 text-xs px-2 py-1 rounded transition-opacity hover:opacity-80 ${
+                              isOwn
+                                ? "bg-primary-foreground/20 text-primary-foreground"
+                                : "bg-primary/10 text-primary"
+                            }`}
+                          >
+                            {attachment.file_type.startsWith("image/") && (
+                              <Image className="h-3 w-3 flex-shrink-0" />
+                            )}
+                            {attachment.file_type.startsWith("video/") && (
+                              <Play className="h-3 w-3 flex-shrink-0" />
+                            )}
+                            {attachment.file_type.startsWith("audio/") && (
+                              <Music className="h-3 w-3 flex-shrink-0" />
+                            )}
+                            {!attachment.file_type.startsWith("image/") &&
+                              !attachment.file_type.startsWith("video/") &&
+                              !attachment.file_type.startsWith("audio/") && (
+                                <FileText className="h-3 w-3 flex-shrink-0" />
+                              )}
+                            <span className="truncate">{attachment.file_name}</span>
+                          </a>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <span className="text-[10px] sm:text-xs text-muted-foreground px-1">
                     {formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}
