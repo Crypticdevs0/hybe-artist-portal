@@ -34,8 +34,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
     }
 
     // Ensure Vercel blob token is configured server-side
-    if (!process.env.VERCEL_BLOB_TOKEN) {
-      console.error('VERCEL_BLOB_TOKEN is missing')
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      console.error('BLOB_READ_WRITE_TOKEN is missing')
       return NextResponse.json({ error: 'Upload service misconfigured' }, { status: 500 })
     }
 
