@@ -8,19 +8,41 @@ export function LoadingSpinner() {
   const router = useRouter()
 
   useEffect(() => {
-    const handleStart = () => setIsLoading(true)
+    let navigationTimer: NodeJS.Timeout
+
+    const handleStart = () => {
+      setIsLoading(true)
+      clearTimeout(navigationTimer)
+
+      // Auto-hide after max 1.5 seconds as a fallback
+      navigationTimer = setTimeout(() => setIsLoading(false), 1500)
+    }
+
+    const handleStop = () => {
+      clearTimeout(navigationTimer)
+      setIsLoading(false)
+    }
 
     const originalPush = router.push
     const originalReplace = router.replace
 
     router.push = function (...args) {
       handleStart()
-      return originalPush.apply(router, args)
+      const result = originalPush.apply(router, args)
+      // Use queueMicrotask to detect navigation completion faster
+      queueMicrotask(() => {
+        setTimeout(handleStop, 100)
+      })
+      return result
     }
 
     router.replace = function (...args) {
       handleStart()
-      return originalReplace.apply(router, args)
+      const result = originalReplace.apply(router, args)
+      queueMicrotask(() => {
+        setTimeout(handleStop, 100)
+      })
+      return result
     }
 
     // Handle regular navigation links
@@ -44,12 +66,9 @@ export function LoadingSpinner() {
 
     document.addEventListener('click', handleClick)
 
-    // Stop loading after page becomes interactive
-    const timer = setTimeout(() => setIsLoading(false), 3000)
-
     return () => {
       document.removeEventListener('click', handleClick)
-      clearTimeout(timer)
+      clearTimeout(navigationTimer)
       router.push = originalPush
       router.replace = originalReplace
     }
