@@ -6,7 +6,12 @@ import { PostCard } from "@/components/post-card"
 import Icon from "@/components/ui/icon"
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
+  let supabase
+  try {
+    supabase = await createClient()
+  } catch (error) {
+    throw new Error("Failed to initialize Supabase client. Please check your environment variables.")
+  }
 
   const {
     data: { user },
