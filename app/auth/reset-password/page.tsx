@@ -4,6 +4,7 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import useSupabaseBrowserClient from "@/lib/supabase/client"
+import { logError } from "@/lib/error-logger"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -64,7 +65,10 @@ export default function ResetPasswordPage() {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to reset password"
       setError(errorMessage)
-      console.error("Reset password error:", error)
+      logError("reset_password_error", error, {
+        errorMessage,
+        timestamp: new Date().toISOString(),
+      })
     } finally {
       setIsLoading(false)
     }

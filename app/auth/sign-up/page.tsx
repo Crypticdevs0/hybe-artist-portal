@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { PasswordRequirements } from "@/components/password-requirements"
+import { logError } from "@/lib/error-logger"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -42,11 +43,12 @@ export default function SignUpPage() {
     }
 
     try {
+      const emailRedirectTo = `${window.location.origin}/auth/callback`
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo,
           data: {
             display_name: displayName,
           },
@@ -57,7 +59,11 @@ export default function SignUpPage() {
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "An error occurred while creating your account"
       setError(errorMessage)
-      console.error("Sign-up error:", error)
+      logError("sign_up_error", error, {
+        email,
+        errorMessage,
+        timestamp: new Date().toISOString(),
+      })
     } finally {
       setIsLoading(false)
     }
