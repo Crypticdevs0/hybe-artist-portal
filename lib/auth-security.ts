@@ -9,7 +9,7 @@ export async function isEmailVerified(
   supabase: SupabaseClient,
   userId: string
 ): Promise<boolean> {
-  const { data: { user } } = await supabase.auth.admin?.getUser(userId)
+  const { data: { user } } = await supabase.auth.admin?.getUserById(userId)
     || { data: { user: null } }
 
   if (!user) {
