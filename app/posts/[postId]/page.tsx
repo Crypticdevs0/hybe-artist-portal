@@ -6,6 +6,7 @@ import { CommentSection } from "@/components/comment-section"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Icon from "@/components/ui/icon"
 import Link from "next/link"
+import { Breadcrumb } from "@/components/breadcrumb"
 
 export default async function PostPage({
   params,
@@ -76,13 +77,14 @@ export default async function PostPage({
       <DashboardNav userRole={profile?.role} />
 
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-6 sm:py-8 lg:py-10">
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mb-6"
-        >
-          <Icon name="ArrowLeft" className="h-4 w-4" />
-          Back to feed
-        </Link>
+        <Breadcrumb
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: post.artist.stage_name, href: `/artist/${post.artist.id}` },
+            { label: post.title, href: `/posts/${postId}` },
+            { label: "Comments" },
+          ]}
+        />
 
         <div className="space-y-6">
           <PostCard post={postWithLikeStatus} />
