@@ -2,11 +2,12 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { DashboardNav } from "@/components/dashboard-nav"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import Icon from "@/components/ui/icon"
+import { ArrowLeft, AlertTriangle, CheckCircle, Clock } from "lucide-react"
 import Link from "next/link"
 
-export default async function ReportsPage() {
+export default async function AdminReportsPage() {
   const supabase = await createClient()
 
   const {
@@ -20,9 +21,62 @@ export default async function ReportsPage() {
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 
-  // Check if user is admin
   if (profile?.role !== "admin") {
     redirect("/dashboard")
+  }
+
+  // Note: This feature would typically use a dedicated reports table
+  // For now, we'll display a placeholder interface
+  const mockReports = [
+    {
+      id: "1",
+      type: "content",
+      title: "Inappropriate Post Content",
+      description: "User reported a post containing inappropriate language",
+      status: "pending",
+      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+      reportedBy: "John Doe",
+      reportedContent: "Artist Post #123",
+    },
+    {
+      id: "2",
+      type: "user",
+      title: "Spam Account Activity",
+      description: "Multiple reports of spam messages from this user",
+      status: "in_review",
+      createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+      reportedBy: "Jane Smith",
+      reportedContent: "User: SpamBot123",
+    },
+    {
+      id: "3",
+      type: "content",
+      title: "Copyright Violation",
+      description: "Post contains copyrighted material without permission",
+      status: "resolved",
+      createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+      reportedBy: "Sarah Johnson",
+      reportedContent: "Post #456",
+    },
+  ]
+
+  const statusColors = {
+    pending: "bg-yellow-500",
+    in_review: "bg-blue-500",
+    resolved: "bg-green-500",
+  }
+
+  const statusIcons = {
+    pending: <Clock className="h-4 w-4" />,
+    in_review: <AlertTriangle className="h-4 w-4" />,
+    resolved: <CheckCircle className="h-4 w-4" />,
+  }
+
+  const reportStats = {
+    total: mockReports.length,
+    pending: mockReports.filter((r) => r.status === "pending").length,
+    inReview: mockReports.filter((r) => r.status === "in_review").length,
+    resolved: mockReports.filter((r) => r.status === "resolved").length,
   }
 
   return (
@@ -30,139 +84,153 @@ export default async function ReportsPage() {
       <DashboardNav userRole={profile?.role} />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-8 lg:py-10">
-        <div className="mb-6 sm:mb-8">
-          <Link
-            href="/admin"
-            className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mb-4"
-          >
-            <Icon name="ArrowLeft" className="h-4 w-4" />
+        <Button asChild variant="ghost" size="sm" className="mb-4">
+          <Link href="/admin">
+            <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Admin
           </Link>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">User & Content Reports</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-2">Review reports and take action on violations</p>
+        </Button>
+
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">User Reports</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-2">Review and manage user-reported issues</p>
         </div>
 
-        {/* Report Categories */}
-        <div className="grid gap-4 sm:gap-6 md:grid-cols-3 mb-6 sm:mb-8">
-          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm">
+        {/* Report Stats */}
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-4 mb-6 sm:mb-8">
+          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-200">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Pending Reports</CardTitle>
-              <Icon name="AlertCircle" className="h-5 w-5 text-amber-500" />
+              <CardTitle className="text-sm font-medium">Total Reports</CardTitle>
+              <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">0</div>
+              <div className="text-2xl font-bold text-foreground">{reportStats.total}</div>
+              <p className="text-xs text-muted-foreground mt-1">All reports combined</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-200">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Pending</CardTitle>
+              <Clock className="h-4 w-4 text-yellow-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-yellow-500">{reportStats.pending}</div>
               <p className="text-xs text-muted-foreground mt-1">Awaiting review</p>
             </CardContent>
           </Card>
 
-          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm">
+          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-200">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Resolved</CardTitle>
-              <Icon name="CheckCircle" className="h-5 w-5 text-green-500" />
+              <CardTitle className="text-sm font-medium">In Review</CardTitle>
+              <AlertTriangle className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">0</div>
-              <p className="text-xs text-muted-foreground mt-1">This month</p>
+              <div className="text-2xl font-bold text-blue-500">{reportStats.inReview}</div>
+              <p className="text-xs text-muted-foreground mt-1">Currently being reviewed</p>
             </CardContent>
           </Card>
 
-          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm">
+          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-200">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Reports</CardTitle>
-              <Icon name="Flag" className="h-5 w-5 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Resolved</CardTitle>
+              <CheckCircle className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground">0</div>
-              <p className="text-xs text-muted-foreground mt-1">All time</p>
+              <div className="text-2xl font-bold text-green-500">{reportStats.resolved}</div>
+              <p className="text-xs text-muted-foreground mt-1">Completed reviews</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Report Types */}
-        <Card className="border-primary/10 bg-card/80 backdrop-blur-sm mb-6 sm:mb-8">
+        {/* Reports List */}
+        <Card className="border-primary/10 bg-card/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Icon name="BarChart3" className="h-5 w-5" />
-              Report Categories
-            </CardTitle>
+            <CardTitle>All Reports</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 rounded-lg border border-border/40">
-                <div>
-                  <h3 className="font-semibold text-foreground">Inappropriate Content</h3>
-                  <p className="text-xs text-muted-foreground mt-1">Posts or comments that violate guidelines</p>
-                </div>
-                <Button variant="outline" size="sm" disabled className="text-xs">
-                  0 Reports
-                </Button>
-              </div>
+              {mockReports.map((report) => (
+                <div
+                  key={report.id}
+                  className="flex flex-col gap-3 border-b border-border/40 pb-4 last:border-0"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-2">
+                        <span className="font-semibold text-sm">{report.title}</span>
+                        <Badge className={`${statusColors[report.status as keyof typeof statusColors]} text-xs capitalize`}>
+                          {report.status.replace("_", " ")}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs capitalize">
+                          {report.type}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-foreground mb-2">{report.description}</p>
+                      <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+                        <p>
+                          <span className="font-medium">Reported by:</span> {report.reportedBy}
+                        </p>
+                        <p>
+                          <span className="font-medium">Content:</span> {report.reportedContent}
+                        </p>
+                        <p>
+                          <span className="font-medium">Reported:</span>{" "}
+                          {report.createdAt.toLocaleString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
 
-              <div className="flex items-center justify-between p-4 rounded-lg border border-border/40">
-                <div>
-                  <h3 className="font-semibold text-foreground">Spam</h3>
-                  <p className="text-xs text-muted-foreground mt-1">Spam messages or advertising</p>
+                  <div className="flex items-center gap-2 justify-end">
+                    <Button variant="outline" size="sm" className="bg-transparent">
+                      View Details
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-transparent border-blue-500/50 hover:bg-blue-500/10"
+                    >
+                      Mark as Review
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-transparent border-green-500/50 hover:bg-green-500/10"
+                    >
+                      Resolve
+                    </Button>
+                  </div>
                 </div>
-                <Button variant="outline" size="sm" disabled className="text-xs">
-                  0 Reports
-                </Button>
-              </div>
+              ))}
 
-              <div className="flex items-center justify-between p-4 rounded-lg border border-border/40">
-                <div>
-                  <h3 className="font-semibold text-foreground">Harassment</h3>
-                  <p className="text-xs text-muted-foreground mt-1">Abuse or harassing behavior</p>
-                </div>
-                <Button variant="outline" size="sm" disabled className="text-xs">
-                  0 Reports
-                </Button>
-              </div>
-
-              <div className="flex items-center justify-between p-4 rounded-lg border border-border/40">
-                <div>
-                  <h3 className="font-semibold text-foreground">Account Issues</h3>
-                  <p className="text-xs text-muted-foreground mt-1">Compromised or suspicious accounts</p>
-                </div>
-                <Button variant="outline" size="sm" disabled className="text-xs">
-                  0 Reports
-                </Button>
-              </div>
-            </div>
-
-            <div className="pt-6 border-t border-border/40 mt-6">
-              <p className="text-sm text-muted-foreground text-center">
-                Report submission and management system coming soon
-              </p>
+              {mockReports.length === 0 && (
+                <div className="py-12 text-center text-muted-foreground">No reports found</div>
+              )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Admin Actions */}
-        <Card className="border-primary/10 bg-card/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Icon name="Shield" className="h-5 w-5" />
-              Available Actions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <Button variant="outline" className="w-full justify-start" disabled>
-                <Icon name="Eye" className="h-4 w-4 mr-2" />
-                Review Flagged Content
-              </Button>
-              <Button variant="outline" className="w-full justify-start" disabled>
-                <Icon name="Ban" className="h-4 w-4 mr-2" />
-                Suspend User Account
-              </Button>
-              <Button variant="outline" className="w-full justify-start" disabled>
-                <Icon name="Trash2" className="h-4 w-4 mr-2" />
-                Delete Content
-              </Button>
-              <Button variant="outline" className="w-full justify-start" disabled>
-                <Icon name="Mail" className="h-4 w-4 mr-2" />
-                Send Warning Message
-              </Button>
+        {/* Coming Soon Note */}
+        <Card className="border-primary/10 bg-card/80 backdrop-blur-sm mt-6">
+          <CardContent className="pt-6">
+            <div className="rounded-lg bg-blue-500/10 border border-blue-500/20 p-4">
+              <p className="text-sm text-foreground">
+                <strong>Note:</strong> The reports system currently displays sample data. To fully implement this feature,
+                you'll need to:
+              </p>
+              <ul className="list-disc list-inside text-sm text-muted-foreground mt-2 space-y-1">
+                <li>Create a "reports" table in your Supabase database</li>
+                <li>Add a report flagging feature in your app's UI</li>
+                <li>Connect this admin page to the actual reports data</li>
+                <li>Implement automated actions (content removal, user suspension, etc.)</li>
+              </ul>
             </div>
           </CardContent>
         </Card>
