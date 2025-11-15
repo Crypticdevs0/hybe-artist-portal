@@ -191,7 +191,7 @@ export function SearchBar() {
                     Posts
                   </div>
                   <div className="max-h-[200px] overflow-y-auto">
-                    {results.posts.map((post) => (
+                    {filteredResults.posts.map((post) => (
                       <button
                         key={post.id}
                         onClick={() => handlePostClick(post.id)}
