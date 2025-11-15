@@ -3,10 +3,14 @@
 import dynamic from "next/dynamic"
 const Search = dynamic(() => import("lucide-react").then((m) => m.Search), { ssr: false })
 const X = dynamic(() => import("lucide-react").then((m) => m.X), { ssr: false })
+const FileText = dynamic(() => import("lucide-react").then((m) => m.FileText), { ssr: false })
+const Users = dynamic(() => import("lucide-react").then((m) => m.Users), { ssr: false })
+const MessageSquare = dynamic(() => import("lucide-react").then((m) => m.MessageSquare), { ssr: false })
 import { useRouter } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 
 interface SearchResult {
   posts: Array<{
@@ -35,6 +39,7 @@ export function SearchBar() {
   const [isOpen, setIsOpen] = useState(false)
   const [results, setResults] = useState<SearchResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [filterType, setFilterType] = useState<'all' | 'posts' | 'artists'>('all')
   const router = useRouter()
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -88,10 +93,16 @@ export function SearchBar() {
 
   const handleSearchSubmit = () => {
     if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query)}`)
+      const filterParam = filterType !== 'all' ? `&filter=${filterType}` : ''
+      router.push(`/search?q=${encodeURIComponent(query)}${filterParam}`)
       setIsOpen(false)
     }
   }
+
+  const filteredResults = results ? {
+    posts: filterType === 'all' || filterType === 'posts' ? results.posts : [],
+    artists: filterType === 'all' || filterType === 'artists' ? results.artists : [],
+  } : null
 
   return (
     <div className="relative flex-1 max-w-md" ref={searchContainerRef}>
@@ -128,23 +139,53 @@ export function SearchBar() {
 
       {isOpen && query.trim() && (
         <div
-          className="absolute top-full left-0 right-0 mt-2 z-50 bg-popover border border-border rounded-lg shadow-lg"
+          className="absolute top-full left-0 right-0 mt-2 z-50 bg-popover border border-border rounded-lg shadow-lg overflow-hidden"
         >
+          {/* Quick Filter Buttons */}
+          <div className="flex gap-2 p-3 border-b border-border/40 bg-muted/30">
+            <Button
+              size="sm"
+              variant={filterType === 'all' ? 'default' : 'outline'}
+              onClick={() => setFilterType('all')}
+              className="text-xs h-7"
+            >
+              All
+            </Button>
+            <Button
+              size="sm"
+              variant={filterType === 'posts' ? 'default' : 'outline'}
+              onClick={() => setFilterType('posts')}
+              className="text-xs h-7 gap-1"
+            >
+              <FileText className="h-3 w-3" />
+              <span className="hidden sm:inline">Posts</span>
+            </Button>
+            <Button
+              size="sm"
+              variant={filterType === 'artists' ? 'default' : 'outline'}
+              onClick={() => setFilterType('artists')}
+              className="text-xs h-7 gap-1"
+            >
+              <Users className="h-3 w-3" />
+              <span className="hidden sm:inline">Artists</span>
+            </Button>
+          </div>
+
           {isLoading && (
             <div className="p-4 text-center">
               <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin inline-block" />
             </div>
           )}
 
-          {!isLoading && results && (results.posts.length === 0 && results.artists.length === 0) && (
+          {!isLoading && filteredResults && (filteredResults.posts.length === 0 && filteredResults.artists.length === 0) && (
             <div className="p-4 text-center text-sm text-muted-foreground">
               No results found for &ldquo;{query}&rdquo;
             </div>
           )}
 
-          {!isLoading && results && (
+          {!isLoading && filteredResults && (
             <>
-              {results.posts.length > 0 && (
+              {filteredResults.posts.length > 0 && (
                 <div className="border-b border-border">
                   <div className="px-3 py-2 text-xs font-semibold text-muted-foreground bg-muted/50">
                     Posts
@@ -166,13 +207,13 @@ export function SearchBar() {
                 </div>
               )}
 
-              {results.artists.length > 0 && (
+              {filteredResults.artists.length > 0 && (
                 <div>
                   <div className="px-3 py-2 text-xs font-semibold text-muted-foreground bg-muted/50">
                     Artists
                   </div>
                   <div className="max-h-[200px] overflow-y-auto">
-                    {results.artists.map((artist) => (
+                    {filteredResults.artists.map((artist) => (
                       <button
                         key={artist.id}
                         onClick={() => handleArtistClick(artist.id)}
@@ -200,7 +241,7 @@ export function SearchBar() {
                 </div>
               )}
 
-              {(results.posts.length > 0 || results.artists.length > 0) && (
+              {(filteredResults.posts.length > 0 || filteredResults.artists.length > 0) && (
                 <button
                   onClick={handleSearchSubmit}
                   className="w-full text-center px-3 py-2 text-sm text-primary hover:bg-muted transition-colors border-t border-border font-medium"

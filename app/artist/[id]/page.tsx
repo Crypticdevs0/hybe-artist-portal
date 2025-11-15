@@ -8,6 +8,9 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Icon from "@/components/ui/icon"
 import Link from "next/link"
+import { Breadcrumb } from "@/components/breadcrumb"
+
+export const revalidate = 60 // revalidate every 60 seconds
 
 export default async function ArtistPage({
   params,
@@ -83,13 +86,12 @@ export default async function ArtistPage({
       <DashboardNav userRole={profile?.role} />
 
       <div className="mx-auto max-w-4xl px-4 sm:px-6 py-6 sm:py-8 lg:py-10">
-        <Link
-          href="/search"
-          className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mb-6"
-        >
-          <Icon name="ArrowLeft" className="h-4 w-4" />
-          Back to search
-        </Link>
+        <Breadcrumb
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: artistProfile.display_name },
+          ]}
+        />
 
         <Card className="border-primary/10 bg-card/80 backdrop-blur-sm mb-6 sm:mb-8">
           <CardContent className="pt-6 sm:pt-8">
@@ -103,11 +105,19 @@ export default async function ArtistPage({
 
               <div className="flex-1 space-y-4 w-full">
                 <div>
-                  <h1 className="text-3xl sm:text-4xl font-bold mb-3 text-foreground">
-                    {artistProfile.display_name}
-                  </h1>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
+                      {artistProfile.display_name}
+                    </h1>
+                    {artist?.verified && (
+                      <Badge className="bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-200/50 flex items-center gap-1">
+                        <Icon name="CheckCircle" className="h-4 w-4" />
+                        Verified
+                      </Badge>
+                    )}
+                  </div>
                   {artist?.stage_name && artist.stage_name !== artistProfile.display_name && (
-                    <p className="text-lg text-muted-foreground">{artist.stage_name}</p>
+                    <p className="text-lg text-muted-foreground mt-2">{artist.stage_name}</p>
                   )}
                   <div className="flex flex-wrap items-center gap-2 mt-3">
                     <Badge className="gradient-hybe text-white">Artist</Badge>

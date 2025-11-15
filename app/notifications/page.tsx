@@ -4,6 +4,9 @@ import { DashboardNav } from "@/components/dashboard-nav"
 import { Card, CardContent } from "@/components/ui/card"
 import { formatDistanceToNow } from "date-fns"
 import Icon from "@/components/ui/icon"
+import { Breadcrumb } from "@/components/breadcrumb"
+
+export const revalidate = 30 // revalidate every 30 seconds
 
 export default async function NotificationsPage() {
   const supabase = await createClient()
@@ -55,6 +58,12 @@ export default async function NotificationsPage() {
       <DashboardNav userRole={profile?.role} />
 
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-6 sm:py-8 lg:py-10">
+        <Breadcrumb
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Notifications" },
+          ]}
+        />
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
             <Icon name="Bell" className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />

@@ -1,11 +1,14 @@
 import { Card } from "@/components/ui/card"
 import { redirect } from "next/navigation"
-
-export const revalidate = 3600 // revalidate every hour
 import { createClient } from "@/lib/supabase/server"
 import { DashboardNav } from "@/components/dashboard-nav"
-import { PostCard } from "@/components/post-card"
 import Icon from "@/components/ui/icon"
+import { Breadcrumb } from "@/components/breadcrumb"
+import { FeedDisplay } from "@/components/feed-display"
+import { PostCard } from "@/components/post-card"
+import Link from "next/link"
+
+export const revalidate = 30 // revalidate every 30 seconds for fresh feed
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -56,6 +59,11 @@ export default async function DashboardPage() {
       <DashboardNav userRole={profile?.role} />
 
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-6 sm:py-8 lg:py-10">
+        <Breadcrumb
+          items={[
+            { label: "Dashboard" },
+          ]}
+        />
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
             <Icon name="Sparkles" className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
@@ -64,19 +72,74 @@ export default async function DashboardPage() {
           <p className="text-sm sm:text-base text-muted-foreground">Latest updates from your favorite artists</p>
         </div>
 
-        <div className="space-y-4 sm:space-y-6">
-          {postsWithLikeStatus.length === 0 ? (
-            <Card className="p-8 sm:p-12 text-center border-primary/10 bg-card/50 backdrop-blur-sm">
-              <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 sm:mb-6">
-                <Icon name="Sparkles" className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
+        {/* Recent and Trending Sections */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          {/* Recent Section */}
+          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-2 mb-4">
+              <Icon name="Clock" className="h-5 w-5 text-primary" />
+              <h3 className="text-lg font-semibold text-foreground">Recent Posts</h3>
+            </div>
+            {postsWithLikeStatus.length > 0 ? (
+              <div className="space-y-3">
+                {postsWithLikeStatus.slice(0, 3).map((post) => (
+                  <Link
+                    key={post.id}
+                    href={`/posts/${post.id}`}
+                    className="block p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                  >
+                    <p className="font-medium text-sm text-foreground truncate">{post.title}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      by {post.artist.stage_name}
+                    </p>
+                  </Link>
+                ))}
               </div>
-              <p className="text-sm sm:text-base text-muted-foreground">
-                No posts yet. Check back soon for updates from artists!
-              </p>
-            </Card>
-          ) : (
-            postsWithLikeStatus.map((post) => <PostCard key={post.id} post={post} />)
-          )}
+            ) : (
+              <p className="text-sm text-muted-foreground">No recent posts</p>
+            )}
+          </Card>
+
+          {/* Trending Section */}
+          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-2 mb-4">
+              <Icon name="TrendingUp" className="h-5 w-5 text-primary" />
+              <h3 className="text-lg font-semibold text-foreground">Trending Now</h3>
+            </div>
+            {postsWithLikeStatus.length > 0 ? (
+              <div className="space-y-3">
+                {postsWithLikeStatus
+                  .sort((a, b) => (b.likes.length + b.comments.length) - (a.likes.length + a.comments.length))
+                  .slice(0, 3)
+                  .map((post) => (
+                    <Link
+                      key={post.id}
+                      href={`/posts/${post.id}`}
+                      className="block p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                    >
+                      <p className="font-medium text-sm text-foreground truncate">{post.title}</p>
+                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                        <Icon name="Heart" className="h-3 w-3" />
+                        <span>{post.likes.length}</span>
+                        <Icon name="MessageCircle" className="h-3 w-3 ml-1" />
+                        <span>{post.comments.length}</span>
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No trending posts</p>
+            )}
+          </Card>
+        </div>
+
+        {/* Main Feed with Sorting and Pagination */}
+        <div className="mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">Your Feed</h2>
+          <FeedDisplay
+            initialPosts={postsWithLikeStatus}
+            userId={user.id}
+          />
         </div>
       </div>
     </div>

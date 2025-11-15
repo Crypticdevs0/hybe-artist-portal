@@ -35,8 +35,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
 
     // Ensure Vercel blob token is configured server-side
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
-      console.error('BLOB_READ_WRITE_TOKEN is missing')
-      return NextResponse.json({ error: 'Upload service misconfigured' }, { status: 500 })
+      console.error('BLOB_READ_WRITE_TOKEN environment variable is not configured. Please set BLOB_READ_WRITE_TOKEN in your environment.')
+      return NextResponse.json({
+        error: 'Upload service misconfigured. Please contact support if this persists.'
+      }, { status: 500 })
     }
 
     const formData = await request.formData()
