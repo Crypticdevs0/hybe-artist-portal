@@ -3,6 +3,7 @@
 import type React from "react"
 
 import useSupabaseBrowserClient from "@/lib/supabase/client"
+import { logError } from "@/lib/error-logger"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -40,7 +41,11 @@ export default function ForgotPasswordPage() {
         type: "error",
         text: errorMessage,
       })
-      console.error("Forgot password error:", error)
+      logError("forgot_password_error", error, {
+        email,
+        errorMessage,
+        timestamp: new Date().toISOString(),
+      })
     } finally {
       setIsLoading(false)
     }
