@@ -9,6 +9,7 @@ const MessageSquare = dynamic(() => import("lucide-react").then((mod) => mod.Mes
 const User = dynamic(() => import("lucide-react").then((mod) => mod.User), { ssr: false })
 const LogOut = dynamic(() => import("lucide-react").then((mod) => mod.LogOut), { ssr: false })
 const Menu = dynamic(() => import("lucide-react").then((mod) => mod.Menu), { ssr: false })
+const Compass = dynamic(() => import("lucide-react").then((mod) => mod.Compass), { ssr: false })
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import useSupabaseBrowserClient from "@/lib/supabase/client"
@@ -35,6 +36,7 @@ export function DashboardNav({ userRole }: DashboardNavProps) {
 
   const navItems = [
     { href: "/dashboard", icon: Home, label: "Feed" },
+    { href: "/discover", icon: Compass, label: "Discover" },
     { href: "/messages", icon: MessageSquare, label: "Messages" },
     { href: "/notifications", icon: Bell, label: "Notifications" },
     { href: "/profile", icon: User, label: "Profile" },
