@@ -44,6 +44,14 @@ export function PostCard({ post, onLike, onComment }: PostCardProps) {
 
   const handleLike = async () => {
     if (isLiking) return
+
+    // Store previous state for rollback
+    const previousLiked = isLiked
+    const previousCount = likeCount
+
+    // Optimistic update
+    setIsLiked(!isLiked)
+    setLikeCount((prev) => (previousLiked ? prev - 1 : prev + 1))
     setIsLiking(true)
 
     const {
@@ -51,27 +59,31 @@ export function PostCard({ post, onLike, onComment }: PostCardProps) {
     } = await supabase.auth.getUser()
 
     if (!user) {
+      // Rollback on auth error
+      setIsLiked(previousLiked)
+      setLikeCount(previousCount)
       setIsLiking(false)
       return
     }
 
     try {
-      if (isLiked) {
-        await supabase.from("likes").delete().eq("post_id", post.id).eq("user_id", user.id)
-        setLikeCount((prev) => prev - 1)
-        setIsLiked(false)
-      } else {
+      if (!previousLiked) {
+        // Adding a like
         await supabase.from("likes").insert({ post_id: post.id, user_id: user.id })
-        setLikeCount((prev) => prev + 1)
-        setIsLiked(true)
         toast({
           title: "Liked!",
           description: `You liked ${post.artist.stage_name}'s post`,
           duration: 2000,
         })
+      } else {
+        // Removing a like
+        await supabase.from("likes").delete().eq("post_id", post.id).eq("user_id", user.id)
       }
       onLike?.()
     } catch (error) {
+      // Rollback on error
+      setIsLiked(previousLiked)
+      setLikeCount(previousCount)
       logError("toggle_like", error, { post_id: post.id, user_id: user?.id })
       toast({
         variant: "destructive",
