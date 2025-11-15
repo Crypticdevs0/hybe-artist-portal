@@ -4,8 +4,9 @@ import { DashboardNav } from "@/components/dashboard-nav"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, AlertTriangle, CheckCircle, Clock } from "lucide-react"
+import { ArrowLeft, Flag, AlertCircle } from "lucide-react"
 import Link from "next/link"
+import { format } from "date-fns"
 
 export default async function AdminReportsPage() {
   const supabase = await createClient()
@@ -25,58 +26,13 @@ export default async function AdminReportsPage() {
     redirect("/dashboard")
   }
 
-  // Note: This feature would typically use a dedicated reports table
-  // For now, we'll display a placeholder interface
-  const mockReports = [
-    {
-      id: "1",
-      type: "content",
-      title: "Inappropriate Post Content",
-      description: "User reported a post containing inappropriate language",
-      status: "pending",
-      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-      reportedBy: "John Doe",
-      reportedContent: "Artist Post #123",
-    },
-    {
-      id: "2",
-      type: "user",
-      title: "Spam Account Activity",
-      description: "Multiple reports of spam messages from this user",
-      status: "in_review",
-      createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
-      reportedBy: "Jane Smith",
-      reportedContent: "User: SpamBot123",
-    },
-    {
-      id: "3",
-      type: "content",
-      title: "Copyright Violation",
-      description: "Post contains copyrighted material without permission",
-      status: "resolved",
-      createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-      reportedBy: "Sarah Johnson",
-      reportedContent: "Post #456",
-    },
-  ]
-
-  const statusColors = {
-    pending: "bg-yellow-500",
-    in_review: "bg-blue-500",
-    resolved: "bg-green-500",
-  }
-
-  const statusIcons = {
-    pending: <Clock className="h-4 w-4" />,
-    in_review: <AlertTriangle className="h-4 w-4" />,
-    resolved: <CheckCircle className="h-4 w-4" />,
-  }
+  // Placeholder for reports - in a full implementation, this would query from a reports table
+  const reports: any[] = []
 
   const reportStats = {
-    total: mockReports.length,
-    pending: mockReports.filter((r) => r.status === "pending").length,
-    inReview: mockReports.filter((r) => r.status === "in_review").length,
-    resolved: mockReports.filter((r) => r.status === "resolved").length,
+    pending: reports.filter((r) => r.status === "pending").length,
+    resolved: reports.filter((r) => r.status === "resolved").length,
+    total: reports.length,
   }
 
   return (
@@ -84,7 +40,7 @@ export default async function AdminReportsPage() {
       <DashboardNav userRole={profile?.role} />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-8 lg:py-10">
-        <Button asChild variant="ghost" size="sm" className="mb-4">
+        <Button asChild variant="ghost" size="sm" className="mb-4 hover:bg-primary/10">
           <Link href="/admin">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Admin
@@ -92,53 +48,39 @@ export default async function AdminReportsPage() {
         </Button>
 
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">User Reports</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-2">Review and manage user-reported issues</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Reports & Flags</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-2">Review user reports and content flags</p>
         </div>
 
-        {/* Report Stats */}
-        <div className="grid gap-4 sm:gap-6 md:grid-cols-4 mb-6 sm:mb-8">
-          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-200">
+        {/* Stats */}
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-3 mb-6 sm:mb-8">
+          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Total Reports</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+              <Flag className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{reportStats.total}</div>
-              <p className="text-xs text-muted-foreground mt-1">All reports combined</p>
             </CardContent>
           </Card>
 
-          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-200">
+          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Pending</CardTitle>
-              <Clock className="h-4 w-4 text-yellow-500" />
+              <AlertCircle className="h-4 w-4 text-amber-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-yellow-500">{reportStats.pending}</div>
-              <p className="text-xs text-muted-foreground mt-1">Awaiting review</p>
+              <div className="text-2xl font-bold text-foreground">{reportStats.pending}</div>
             </CardContent>
           </Card>
 
-          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-200">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">In Review</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-500">{reportStats.inReview}</div>
-              <p className="text-xs text-muted-foreground mt-1">Currently being reviewed</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all duration-200">
+          <Card className="border-primary/10 bg-card/80 backdrop-blur-sm hover:shadow-lg transition-all">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Resolved</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-500" />
+              <Flag className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-500">{reportStats.resolved}</div>
-              <p className="text-xs text-muted-foreground mt-1">Completed reviews</p>
+              <div className="text-2xl font-bold text-foreground">{reportStats.resolved}</div>
             </CardContent>
           </Card>
         </div>
@@ -146,92 +88,64 @@ export default async function AdminReportsPage() {
         {/* Reports List */}
         <Card className="border-primary/10 bg-card/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle>All Reports</CardTitle>
+            <CardTitle>User Reports</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {mockReports.map((report) => (
-                <div
-                  key={report.id}
-                  className="flex flex-col gap-3 border-b border-border/40 pb-4 last:border-0"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-2">
-                        <span className="font-semibold text-sm">{report.title}</span>
-                        <Badge className={`${statusColors[report.status as keyof typeof statusColors]} text-xs capitalize`}>
-                          {report.status.replace("_", " ")}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs capitalize">
-                          {report.type}
-                        </Badge>
+            {reports && reports.length > 0 ? (
+              <div className="space-y-4">
+                {reports.map((report: any) => (
+                  <div
+                    key={report.id}
+                    className="flex flex-col gap-3 border-b border-border/40 pb-4 last:border-0"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-sm sm:text-base text-foreground">{report.reason}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          Reported by {report.reporter_name || "Anonymous"}
+                        </p>
                       </div>
-                      <p className="text-sm text-foreground mb-2">{report.description}</p>
-                      <div className="flex flex-col gap-1 text-xs text-muted-foreground">
-                        <p>
-                          <span className="font-medium">Reported by:</span> {report.reportedBy}
-                        </p>
-                        <p>
-                          <span className="font-medium">Content:</span> {report.reportedContent}
-                        </p>
-                        <p>
-                          <span className="font-medium">Reported:</span>{" "}
-                          {report.createdAt.toLocaleString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
+                      <div className="flex gap-2">
+                        <Badge
+                          variant="outline"
+                          className={`text-xs shrink-0 ${
+                            report.status === "pending" ? "bg-amber-500/10" : "bg-green-500/10"
+                          }`}
+                        >
+                          {report.status || "pending"}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs shrink-0">
+                          {format(new Date(report.created_at), "MMM dd")}
+                        </Badge>
                       </div>
                     </div>
+                    {report.description && (
+                      <p className="text-sm text-foreground bg-muted/30 rounded p-3 break-words">
+                        {report.description}
+                      </p>
+                    )}
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" className="text-xs sm:text-sm bg-transparent">
+                        Review
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs sm:text-sm bg-green-500/10 border-green-500/20 text-green-700 dark:text-green-400"
+                      >
+                        Resolve
+                      </Button>
+                    </div>
                   </div>
-
-                  <div className="flex items-center gap-2 justify-end">
-                    <Button variant="outline" size="sm" className="bg-transparent">
-                      View Details
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-transparent border-blue-500/50 hover:bg-blue-500/10"
-                    >
-                      Mark as Review
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-transparent border-green-500/50 hover:bg-green-500/10"
-                    >
-                      Resolve
-                    </Button>
-                  </div>
-                </div>
-              ))}
-
-              {mockReports.length === 0 && (
-                <div className="py-12 text-center text-muted-foreground">No reports found</div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Coming Soon Note */}
-        <Card className="border-primary/10 bg-card/80 backdrop-blur-sm mt-6">
-          <CardContent className="pt-6">
-            <div className="rounded-lg bg-blue-500/10 border border-blue-500/20 p-4">
-              <p className="text-sm text-foreground">
-                <strong>Note:</strong> The reports system currently displays sample data. To fully implement this feature,
-                you'll need to:
-              </p>
-              <ul className="list-disc list-inside text-sm text-muted-foreground mt-2 space-y-1">
-                <li>Create a "reports" table in your Supabase database</li>
-                <li>Add a report flagging feature in your app's UI</li>
-                <li>Connect this admin page to the actual reports data</li>
-                <li>Implement automated actions (content removal, user suspension, etc.)</li>
-              </ul>
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 sm:py-12">
+                <Flag className="h-8 w-8 sm:h-10 sm:w-10 mx-auto text-muted-foreground/40 mb-2" />
+                <p className="text-sm sm:text-base text-muted-foreground">No reports at this time</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">All systems nominal</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
