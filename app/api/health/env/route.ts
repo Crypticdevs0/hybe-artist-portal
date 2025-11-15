@@ -4,7 +4,7 @@ const requiredEnv = [
   'SUPABASE_URL',
   'SUPABASE_ANON_KEY',
   'SUPABASE_SERVICE_ROLE_KEY',
-  'VERCEL_BLOB_TOKEN',
+  'BLOB_READ_WRITE_TOKEN',
 ]
 
 export async function GET() {

@@ -13,9 +13,9 @@ The HYBE Artist Communication Portal demonstrates strong architecture and code q
 
 1. **🔴 CRITICAL:** Server-side Supabase environment variables not configured
 2. **🔴 CRITICAL:** Authentication middleware is inactive
-3. **🟡 MAJOR:** Missing admin feature pages (subscriptions, comments, reports)
+3. **🟢 RESOLVED:** Missing admin feature pages (subscriptions, comments, reports)
 4. **🟡 MAJOR:** Middleware deprecation warning (needs proxy conversion)
-5. **🟢 MINOR:** VERCEL_BLOB_TOKEN not configured (upload service)
+5. **🟢 MINOR:** BLOB_READ_WRITE_TOKEN not configured (upload service)
 
 ---
 
@@ -93,7 +93,7 @@ All protected routes below are **currently unprotected**:
 
 ---
 
-### 1.3 🟡 MISSING ADMIN FEATURE PAGES
+### 1.3 🟢 RESOLVED: MISSING ADMIN FEATURE PAGES
 
 **Severity:** MAJOR - Broken navigation  
 **Issue:** Admin panel references pages that don't exist
@@ -550,7 +550,7 @@ scripts/004_create_message_attachments.sql - Message attachments
 ✅ Returns upload URL
 ```
 
-**Missing Configuration:** `VERCEL_BLOB_TOKEN` environment variable
+**Missing Configuration:** `BLOB_READ_WRITE_TOKEN` environment variable
 
 ---
 
@@ -813,7 +813,7 @@ export const revalidate = 3600 // 1 hour ISR
 
 **Status:** Partially Configured
 
-**Issue:** VERCEL_BLOB_TOKEN not set
+**Issue:** BLOB_READ_WRITE_TOKEN not set
 
 **Components Using Upload:**
 - ✅ File upload API endpoint works
@@ -821,7 +821,7 @@ export const revalidate = 3600 // 1 hour ISR
 - ✅ Media upload in post creation
 - ✅ Message attachments
 
-**Configuration Needed:** VERCEL_BLOB_TOKEN environment variable
+**Configuration Needed:** BLOB_READ_WRITE_TOKEN environment variable
 
 **Alternative:** Works with Supabase Storage instead if needed
 
@@ -944,7 +944,7 @@ export const revalidate = 3600 // 1 hour ISR
 - [ ] Verify middleware is protecting routes
 
 **Important (Should Fix):**
-- [ ] Set `VERCEL_BLOB_TOKEN` for uploads
+- [ ] Set `BLOB_READ_WRITE_TOKEN` for uploads
 - [ ] Create missing admin pages or remove links
 - [ ] Set up error logging (Sentry or API)
 - [ ] Configure monitoring and alerting
@@ -976,7 +976,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhY
 
 ```bash
 # File uploads
-VERCEL_BLOB_TOKEN=<get-from-vercel-dashboard>
+BLOB_READ_WRITE_TOKEN=<get-from-vercel-dashboard>
 
 # Error tracking (optional but recommended)
 SENTRY_DSN=<get-from-sentry>
@@ -1008,7 +1008,7 @@ UPSTASH_REDIS_REST_TOKEN=<get-from-upstash>
    - Verify all tables created successfully
 
 4. **🟢 MINOR - Configure File Upload Service**
-   - Get `VERCEL_BLOB_TOKEN` from Vercel dashboard
+   - Get `BLOB_READ_WRITE_TOKEN` from Vercel dashboard
    - Or configure Supabase Storage as alternative
 
 ### Post-Launch Actions (Can Do Later)
@@ -1070,7 +1070,7 @@ UPSTASH_REDIS_REST_TOKEN=<get-from-upstash>
 | Middleware Auth | ❌ Inactive | Needs SUPABASE_URL env var |
 | Database Schema | ⚠️ Not Verified | Code ready, needs migration |
 | Admin Pages | 🟡 Partial | 4/7 pages exist |
-| File Upload | ✅ Ready | Needs VERCEL_BLOB_TOKEN |
+| File Upload | ✅ Ready | Needs BLOB_READ_WRITE_TOKEN |
 | Error Logging | ✅ Complete | Works without Sentry |
 | Security | ✅ Strong | RLS, CSP, proper secret mgmt |
 | Performance | ✅ Good | Caching, code splitting, optimization |
