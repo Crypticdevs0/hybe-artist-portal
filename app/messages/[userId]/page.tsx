@@ -8,6 +8,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import Icon from "@/components/ui/icon"
 import Link from "next/link"
+import { Breadcrumb } from "@/components/breadcrumb"
+
+export const revalidate = 0 // No caching for real-time messaging
 
 interface MessagePageProps {
   params: Promise<{
@@ -61,13 +64,13 @@ export default async function MessagePage({ params }: MessagePageProps) {
       <DashboardNav userRole={profile?.role} />
 
       <div className="flex-1 mx-auto w-full max-w-5xl px-4 sm:px-6 py-4 sm:py-6 flex flex-col gap-4 sm:gap-6">
-        {/* Header with Back Button */}
-          <Link href="/messages" className="inline-block w-fit">
-          <Button variant="ghost" size="sm" className="hover:bg-primary/10">
-            <Icon name="ArrowLeft" className="h-4 w-4 mr-2" />
-            Back to Messages
-          </Button>
-        </Link>
+        <Breadcrumb
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Messages", href: "/messages" },
+            { label: recipientProfile.display_name },
+          ]}
+        />
 
         {/* User Header Card */}
         <Card className="p-4 sm:p-6 border-primary/10 bg-gradient-to-r from-card/80 via-card/60 to-card/40 backdrop-blur-sm hover:shadow-md transition-shadow">
