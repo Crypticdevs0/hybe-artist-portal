@@ -35,7 +35,7 @@ SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
 
 # 🟡 OPTIONAL - For file uploads
-VERCEL_BLOB_TOKEN=<get-from-vercel-dashboard>
+BLOB_READ_WRITE_TOKEN=<get-from-vercel-dashboard>
 
 # 🟡 OPTIONAL - For error tracking
 SENTRY_DSN=<get-from-sentry-dashboard>
@@ -101,13 +101,13 @@ ORDER BY tablename;
 
 ### Setup File Uploads with Vercel Blob
 
-1. **Get VERCEL_BLOB_TOKEN:**
+1. **Get BLOB_READ_WRITE_TOKEN:**
    - Go to https://vercel.com/dashboard/settings/tokens
    - Create a new token or use existing Blob token
 
 2. **Set Environment Variable:**
    ```bash
-   VERCEL_BLOB_TOKEN=<your-token>
+   BLOB_READ_WRITE_TOKEN=<your-token>
    ```
 
 3. **Test Upload:**
@@ -225,7 +225,7 @@ curl https://your-domain/api/health/supabase
 
 ### File Upload Not Working
 **Solution:** 
-- If using Vercel Blob: Set `VERCEL_BLOB_TOKEN`
+- If using Vercel Blob: Set `BLOB_READ_WRITE_TOKEN`
 - Or use Supabase Storage (default fallback)
 
 ### Admin Pages Return 404
