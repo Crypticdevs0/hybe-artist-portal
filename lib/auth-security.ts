@@ -55,8 +55,8 @@ export function verifyCSRFToken(token: string, sessionToken: string): boolean {
 
   try {
     return crypto.timingSafeEqual(
-      Buffer.from(token),
-      Buffer.from(sessionToken)
+      new Uint8Array(Buffer.from(token)),
+      new Uint8Array(Buffer.from(sessionToken))
     )
   } catch {
     return false
