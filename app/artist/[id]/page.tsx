@@ -105,11 +105,19 @@ export default async function ArtistPage({
 
               <div className="flex-1 space-y-4 w-full">
                 <div>
-                  <h1 className="text-3xl sm:text-4xl font-bold mb-3 text-foreground">
-                    {artistProfile.display_name}
-                  </h1>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
+                      {artistProfile.display_name}
+                    </h1>
+                    {artist?.verified && (
+                      <Badge className="bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-200/50 flex items-center gap-1">
+                        <Icon name="CheckCircle" className="h-4 w-4" />
+                        Verified
+                      </Badge>
+                    )}
+                  </div>
                   {artist?.stage_name && artist.stage_name !== artistProfile.display_name && (
-                    <p className="text-lg text-muted-foreground">{artist.stage_name}</p>
+                    <p className="text-lg text-muted-foreground mt-2">{artist.stage_name}</p>
                   )}
                   <div className="flex flex-wrap items-center gap-2 mt-3">
                     <Badge className="gradient-hybe text-white">Artist</Badge>
