@@ -71,6 +71,8 @@ export function MessageThread({
   const [showFileUpload, setShowFileUpload] = useState(false)
   const [tempMessageId, setTempMessageId] = useState<string | null>(null)
   const [attachedFiles, setAttachedFiles] = useState<UploadedFile[]>([])
+  const [isRecipientTyping, setIsRecipientTyping] = useState(false)
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const supabase = useSupabaseBrowserClient()
@@ -84,7 +86,7 @@ export function MessageThread({
   }, [messages])
 
   useEffect(() => {
-    // Subscribe to new messages
+    // Subscribe to new messages and typing indicators
     const channel = supabase
       .channel(`messages-${currentUserId}-${recipientId}`)
       .on(
@@ -99,9 +101,32 @@ export function MessageThread({
           const next = payload.new
           if (isMessage(next)) {
             setMessages((prev) => [...prev, next])
+            // Mark message as read
+            supabase
+              .from("messages")
+              .update({ is_read: true })
+              .eq("id", next.id)
+              .catch(() => {
+                // Silent fail - read status update is not critical
+              })
           }
           setIsConnected(true)
         },
+      )
+      .on(
+        "broadcast",
+        { event: "typing" },
+        (payload: { payload: { typing: boolean } }) => {
+          if (payload.payload.typing) {
+            setIsRecipientTyping(true)
+            if (typingTimeoutRef.current) {
+              clearTimeout(typingTimeoutRef.current)
+            }
+            typingTimeoutRef.current = setTimeout(() => {
+              setIsRecipientTyping(false)
+            }, 3000)
+          }
+        }
       )
       .on("system", { event: "database_changes.confirm" }, () => {
         setIsConnected(true)
@@ -112,6 +137,9 @@ export function MessageThread({
 
     return () => {
       supabase.removeChannel(channel)
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current)
+      }
     }
   }, [currentUserId, recipientId, supabase])
 
@@ -122,6 +150,18 @@ export function MessageThread({
       textareaRef.current.style.height = "auto"
       textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + "px"
     }
+
+    // Broadcast typing indicator
+    supabase
+      .channel(`messages-${currentUserId}-${recipientId}`)
+      .send({
+        type: "broadcast",
+        event: "typing",
+        payload: { typing: true },
+      })
+      .catch(() => {
+        // Silent fail - typing indicator is not critical
+      })
   }
 
   const handleSend = async (e: React.FormEvent) => {
@@ -289,6 +329,24 @@ export function MessageThread({
               </div>
             )
           })
+        )}
+        {isRecipientTyping && (
+          <div className="flex items-center gap-2">
+            <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 ring-1 ring-primary/10">
+              <AvatarImage src={recipientAvatar || undefined} alt={recipientName} />
+              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-primary text-xs font-semibold">
+                {recipientName.substring(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex items-center gap-1 px-3 py-2 rounded-2xl bg-muted">
+              <div className="flex gap-1">
+                <div className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "0ms" }} />
+                <div className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "150ms" }} />
+                <div className="h-2 w-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "300ms" }} />
+              </div>
+            </div>
+            <span className="text-[10px] sm:text-xs text-muted-foreground px-1">{recipientName} is typing...</span>
+          </div>
         )}
         <div ref={messagesEndRef} />
       </div>
