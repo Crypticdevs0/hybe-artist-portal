@@ -106,6 +106,9 @@ export function MessageThread({
               .from("messages")
               .update({ is_read: true })
               .eq("id", next.id)
+              .then(() => {
+                // Read status updated successfully
+              })
               .catch(() => {
                 // Silent fail - read status update is not critical
               })
