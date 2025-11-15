@@ -11,7 +11,12 @@ import Link from "next/link"
 export const revalidate = 30 // revalidate every 30 seconds for fresh feed
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
+  let supabase
+  try {
+    supabase = await createClient()
+  } catch (error) {
+    throw new Error('Failed to initialize Supabase client. Please check your environment variables.')
+  }
 
   const {
     data: { user },
