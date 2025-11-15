@@ -101,14 +101,11 @@ export function MessageThread({
           const next = payload.new
           if (isMessage(next)) {
             setMessages((prev) => [...prev, next])
-            // Mark message as read
-            supabase
+            // Mark message as read (fire-and-forget)
+            void supabase
               .from("messages")
               .update({ is_read: true })
               .eq("id", next.id)
-              .catch(() => {
-                // Silent fail - read status update is not critical
-              })
           }
           setIsConnected(true)
         },
