@@ -8,6 +8,9 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Icon from "@/components/ui/icon"
 import Link from "next/link"
+import { Breadcrumb } from "@/components/breadcrumb"
+
+export const revalidate = 60 // revalidate every 60 seconds
 
 export default async function ArtistPage({
   params,
@@ -83,13 +86,12 @@ export default async function ArtistPage({
       <DashboardNav userRole={profile?.role} />
 
       <div className="mx-auto max-w-4xl px-4 sm:px-6 py-6 sm:py-8 lg:py-10">
-        <Link
-          href="/search"
-          className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mb-6"
-        >
-          <Icon name="ArrowLeft" className="h-4 w-4" />
-          Back to search
-        </Link>
+        <Breadcrumb
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: artistProfile.display_name },
+          ]}
+        />
 
         <Card className="border-primary/10 bg-card/80 backdrop-blur-sm mb-6 sm:mb-8">
           <CardContent className="pt-6 sm:pt-8">
