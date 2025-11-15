@@ -4,6 +4,9 @@ import { DashboardNav } from "@/components/dashboard-nav"
 import { ConversationList } from "@/components/conversation-list"
 import { Card } from "@/components/ui/card"
 import Icon from "@/components/ui/icon"
+import { Breadcrumb } from "@/components/breadcrumb"
+
+export const revalidate = 30 // revalidate every 30 seconds for fresh messages
 
 export default async function MessagesPage() {
   const supabase = await createClient()
@@ -75,6 +78,12 @@ export default async function MessagesPage() {
       <DashboardNav userRole={profile?.role} />
 
       <div className="mx-auto max-w-4xl px-4 sm:px-6 py-6 sm:py-8 lg:py-10">
+        <Breadcrumb
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Messages" },
+          ]}
+        />
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
             <Icon name="MessageSquare" className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
