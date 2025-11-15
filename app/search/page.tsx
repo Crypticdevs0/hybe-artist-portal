@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/badge"
 import { PostCard } from "@/components/post-card"
 import Icon from "@/components/ui/icon"
 import Link from "next/link"
+import { Breadcrumb } from "@/components/breadcrumb"
+
+export const revalidate = 30 // revalidate every 30 seconds for fresh search results
 
 interface SearchParams {
   q?: string
@@ -88,6 +91,13 @@ export default async function SearchPage({
       <DashboardNav userRole={profile?.role} />
 
       <div className="mx-auto max-w-4xl px-4 sm:px-6 py-6 sm:py-8 lg:py-10">
+        <Breadcrumb
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Search", href: "/search" },
+            ...(query ? [{ label: `Results for "${query}"` }] : []),
+          ]}
+        />
         <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
           <Icon name="Search" className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
           <div className="flex-1 min-w-0">
