@@ -69,4 +69,19 @@ nextConfig.headers = async () => {
   ]
 }
 
+// Proxy configuration (replaces deprecated middleware.ts convention)
+nextConfig.rewrites = async () => {
+  return {
+    beforeFiles: [
+      {
+        source: '/:path*',
+        destination: '/api/auth-proxy/:path*',
+        missing: [
+          { type: 'header', key: 'X-Middleware-Skip' },
+        ],
+      },
+    ],
+  }
+}
+
 export default withBundleAnalyzer(nextConfig)
