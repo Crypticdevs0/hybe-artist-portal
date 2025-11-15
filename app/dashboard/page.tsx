@@ -1,11 +1,12 @@
 import { Card } from "@/components/ui/card"
 import { redirect } from "next/navigation"
-
-export const revalidate = 3600 // revalidate every hour
 import { createClient } from "@/lib/supabase/server"
 import { DashboardNav } from "@/components/dashboard-nav"
 import { PostCard } from "@/components/post-card"
 import Icon from "@/components/ui/icon"
+import { Breadcrumb } from "@/components/breadcrumb"
+
+export const revalidate = 30 // revalidate every 30 seconds for fresh feed
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -56,6 +57,11 @@ export default async function DashboardPage() {
       <DashboardNav userRole={profile?.role} />
 
       <div className="mx-auto max-w-3xl px-4 sm:px-6 py-6 sm:py-8 lg:py-10">
+        <Breadcrumb
+          items={[
+            { label: "Dashboard" },
+          ]}
+        />
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
             <Icon name="Sparkles" className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
